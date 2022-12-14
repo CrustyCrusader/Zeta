@@ -1,10 +1,55 @@
 <!doctype html>
 <html>
 <head>
-    <title>Zeta</title>
+    <title>ZETA</title>
+
+    <style>
+    body {
+      background-color: #222222;
+      color: #ffffff;
+    }
+    .header {
+      text-align: center;
+      font-size: 72px;
+    }
+    .navbar {
+        background-color: #000000;
+        padding: 10px;
+    }
+      .navbar a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+    .search-bar {
+      width: 500px;
+      margin: 0 auto;
+    }
+    input[type="text"] {
+      width: 35%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 2px solid #ffffff;
+      border-radius: 4px;
+    }
+    input[type="submit"] {
+      width: 35%;
+      background-color: #000000;
+      color: #ffffff;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
    {% include 'navbar.html' %}
+
+   <h1 class="header">Zeta</h1>
+
+   {% include 'searchbar.html' %}
 
    {% block content %}
     replace me

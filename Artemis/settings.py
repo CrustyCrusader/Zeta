@@ -42,6 +42,7 @@ INSTALLED_APPS = [
   # My own
     'products',
     'pages',
+    'Video',
 
 ]
 

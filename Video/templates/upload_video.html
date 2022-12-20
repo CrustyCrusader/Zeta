@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <head>
+        <title>Upload Video</title>
+    </head>
+    <body>
+        <h1>Upload Video</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Upload">
+        </form>
+        {% if videos %}
+        <h2>Videos</h2>
+        {% for video in videos %}
+        <video width="320" height="240" controls>
+            <source src="{{ video.video_file.url }}" type="video/mp4">
+        </video>
+        <p>{{ video.title }}</p>
+        {% endfor %}
+        {% endif %}
+    </body>
+    {% endblock %}

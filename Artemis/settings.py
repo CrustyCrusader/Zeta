@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'products',
     'pages',
     'Video',
+    'blog',
+    
 
 ]
 

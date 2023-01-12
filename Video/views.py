@@ -1,6 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404,redirect
 from django.urls import reverse
 from django.views.generic import (
+    CreateView,
     DetailView,
     ListView,
     UpdateView,
@@ -11,25 +12,22 @@ from django.views.generic import (
 from .forms import VideoForm
 from .models import Video
 
+class VideoCreateView(CreateView):
+    template_name = 'upload_video.html'
+    form_class = VideoForm
+    queryset = Video.objects.all()
 
-def upload_video(request):
-    if request.method == 'POST':
-        form = VideoForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('videos')
-    else:
-        form = VideoForm()
-    return render(request, 'upload_video.html', {'form': form})
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
 
 class VideoListView(ListView):
     template_name = 'Video_list.html'
     queryset = Video.objects.all()
 
 class VideoDetailView(DetailView):
-        template_name = 'video_detail.html'
-    #queryset = Video.objects.all()
-
+    template_name = 'video_detail.html'
+    
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Video, id=id_)
@@ -56,5 +54,5 @@ class VideoDeleteView(DeleteView):
         return get_object_or_404(Video, id=id_)
 
     def get_success_url(self):
-        return reverse('Videos:Video-list')
+        return reverse('Videos:Video_list')
 

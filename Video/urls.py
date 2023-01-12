@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import (upload_video,
+from .views import ( 
+    VideoCreateView,
    VideoDeleteView,
    VideoDetailView,
    VideoListView,
@@ -13,10 +14,10 @@ from .views import (upload_video,
 
 app_name ='Video'
 urlpatterns = [
-    path('',VideoListView.as_view(), name='video-list'),
-    path('upload/', upload_video, name='upload_video'),
-    path('<int:id>/',VideoDetailView.as_view(), name='video-detail'),
-    path('<int:id>/update/',VideoUpdateView.as_view(), name='video-update'),
-    path('<int:id>/delete/',VideoDeleteView.as_view(), name='video-delete'),
+    path('',VideoListView.as_view(), name='video_list'),
+    path('upload/', VideoCreateView.as_view(), name='upload_video'),
+    path('<int:id>/',VideoDetailView.as_view(), name='video_detail'),
+    path('<int:id>/update/',VideoUpdateView.as_view(), name='video_update'),
+    path('<int:id>/delete/',VideoDeleteView.as_view(), name='video_delete'),
 
 ]

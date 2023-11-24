@@ -1,15 +1,15 @@
+{% load static %}
 <!doctype html>
 <html>
 <head>
   <title>ZETA</title>
-  <link rel="stylesheet" type="text/css" href="base.css" >
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
 </head>
 <body>
   <header>
     <h1 class="header">Zeta</h1>
-   {% include 'navbar.html' %}
-   {% include 'searchbar.html' %}
+   {% include 'navbar.html' %}  {% include 'searchbar.html' %}
   </header>
 
 <main>

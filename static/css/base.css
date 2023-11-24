@@ -1,5 +1,5 @@
 body {
-    background-color: #222222;
+    background-color: #c73030;
     color: #ffffff;
   }
   .header {
@@ -15,8 +15,11 @@ body {
       text-decoration: none;
   }
   .search-bar {
+    position: absolute;
+    right: 40px;
     width: 500px;
     margin: 0 auto;
+
   }
   input[type="text"] {
     width: 35%;

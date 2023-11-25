@@ -1,10 +1,11 @@
 body {
-    background-color: #c73030;
+    background-color: #222222;
     color: #ffffff;
   }
   .header {
     text-align: center;
     font-size: 72px;
+    color: chartreuse;
   }
   .navbar {
       background-color: #000000;
@@ -15,9 +16,9 @@ body {
       text-decoration: none;
   }
   .search-bar {
-    position: absolute;
-    right: 40px;
-    width: 500px;
+    position:absolute ;
+    right: 2px;
+    width: 400px;
     margin: 0 auto;
 
   }

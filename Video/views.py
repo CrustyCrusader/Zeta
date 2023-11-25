@@ -13,7 +13,7 @@ from .forms import VideoForm
 from .models import Video
 
 class VideoCreateView(CreateView):
-    template_name = 'upload_video.html'
+    template_name = 'Video/upload_video.html'
     form_class = VideoForm
     queryset = Video.objects.all()
 
@@ -22,11 +22,11 @@ class VideoCreateView(CreateView):
         return super().form_valid(form)
 
 class VideoListView(ListView):
-    template_name = 'Video_list.html'
+    template_name = 'Video/Video_list.html'
     queryset = Video.objects.all()
 
 class VideoDetailView(DetailView):
-    template_name = 'video_detail.html'
+    template_name = 'Video/video_details.html'
     
     def get_object(self):
         id_ = self.kwargs.get("id")
@@ -34,7 +34,7 @@ class VideoDetailView(DetailView):
 
 
 class VideoUpdateView(UpdateView):
-    template_name = 'video_create.html'
+    template_name = 'Video/video_create.html'
     form_class = VideoForm
 
     def get_object(self):
@@ -47,7 +47,7 @@ class VideoUpdateView(UpdateView):
 
 
 class VideoDeleteView(DeleteView):
-    template_name = 'video_delete.html'
+    template_name = 'Video/video_delete.html'
     
     def get_object(self):
         id_ = self.kwargs.get("id")

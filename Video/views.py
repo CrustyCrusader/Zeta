@@ -22,7 +22,7 @@ class VideoCreateView(CreateView):
         return super().form_valid(form)
 
 class VideoListView(ListView):
-    template_name = 'Video/Video_list.html'
+    template_name = 'Video/video_list.html'
     queryset = Video.objects.all()
 
 class VideoDetailView(DetailView):

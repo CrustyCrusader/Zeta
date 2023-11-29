@@ -15,8 +15,8 @@ from .views import (
 app_name ='Video'
 urlpatterns = [
     path('',VideoListView.as_view(), name='video_list'),
-    path('upload/', VideoCreateView.as_view(), name='upload_video'),
-    path('<int:id>/',VideoDetailView.as_view(), name='video_detail'),
+    path('upload/', VideoCreateView.as_view(), name='video_list'),
+    path('<int:id>/',VideoDetailView.as_view(), name='video_details'),
     path('<int:id>/update/',VideoUpdateView.as_view(), name='video_update'),
     path('<int:id>/delete/',VideoDeleteView.as_view(), name='video_delete'),
 

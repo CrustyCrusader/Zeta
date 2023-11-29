@@ -14,7 +14,7 @@
                 height="405"
                 controls
                 data-setup='{"playbackRates": [0.5, 1, 1.5, 2], "fluid": true}'>
-                <source src="/media/{{ object.video_file }}" type="video/mp4">
+                <source src="/Video/{{ object.video_file }}" type="video/mp4">
                 <p class="vjs-no-js">
                 To view this video please enable Javascript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
                 </p>
@@ -43,7 +43,7 @@
                             <ion-icon class="social-share-icons twitter-social-color" name="logo-twitter" data-sharer="twitter" data-title="Checkout {{ object.title }}!" data-hashtags="" data-url="http://localhost:8000/Video/{{ object.pk }}">Share on Twitter</ion-icon>                                
                             <ion-icon class="social-share-icons facebook-social-color" name="logo-facebook" data-sharer="facebook" data-title="Checkout {{ object.title }} by {{ object.uploader }}!" data-hashtags="" data-url="http://localhost:8000/videos/{{ object.pk }}">Share on Facebook</ion-icon>
                             <ion-icon class="social-share-icons reddit-social-color" name="logo-reddit" data-sharer="reddit" data-title="Checkout {{ object.title }} by {{ object.uploader }}!" data-hashtags="" data-url="http://localhost:8000/videos/{{ object.pk }}">Share on Reddit</ion-icon>
-                            <p class="mt-3">Link: http://localhost:8000/videos/{{ object.pk }}</p>
+                            <p class="mt-3">Link: http://localhost:8000/Video/{{ object.pk }}</p>
                         </div>
                     </div>
                     </div>

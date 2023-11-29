@@ -1,25 +1,27 @@
 body {
-    background-color: #222222;
-    color: #ffffff;
+    background-color: #283d32;
+    color: #a7af9e;
   }
   .header {
     text-align: center;
-    font-size: 72px;
-    color: chartreuse;
+    font-size: 55px;
+    color: #7ec94c;
   }
   .navbar {
-      background-color: #000000;
-      padding: 10px;
+    
+      background-color: #525154;
+      padding: 20px;
   }
     .navbar a {
-      color: #ffffff;
+      color: #a7af9e;
       text-decoration: none;
   }
+
   .search-bar {
     position:absolute ;
-    right: 2px;
-    width: 400px;
-    margin: 0 auto;
+    top: 50px;
+    width: 200px;
+    margin: 4px auto;
 
   }
   input[type="text"] {

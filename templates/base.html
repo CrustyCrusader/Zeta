@@ -3,13 +3,14 @@
 <html>
 <head>
   <title>ZETA</title>
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}?{% now "U" %}">
 
 </head>
 <body>
   <header>
     <h1 class="header">Zeta</h1>
-   {% include 'navbar.html' %}  {% include 'searchbar.html' %}
+ {% include 'searchbar.html' %}   
+  {% include 'navbar.html' %} 
   </header>
 
 <main>

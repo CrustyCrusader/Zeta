@@ -1,22 +1,30 @@
 body {
-    background-color: #283d32;
-    color: #a7af9e;
+    background-color: #7b7371;
+    color: #2e2a22;
   }
   .header {
     text-align: center;
     font-size: 55px;
-    color: #7ec94c;
+    color: #594e47;
   }
   .navbar {
-    
-      background-color: #525154;
+      
+      background-color:#594e47 ;
       padding: 20px;
+      overflow: hidden;
   }
     .navbar a {
-      color: #a7af9e;
+      float: left;
+      display: block;
+      color: #9f9fa1;
+      text-align: center;
+      padding: 14px 16px;
       text-decoration: none;
   }
-
+    .navbar a:hover {
+      background-color: #9f9fa1;
+      color: white;
+    }
   .search-bar {
     position:absolute ;
     top: 50px;

@@ -5,7 +5,7 @@
 {% block content %}
 <h1>{{ object.title }}</h1>
 <p>{{ object.description }}</p>
-<p>{{ object.video_file }}</p>
+
 <div class="container">
     <div class="idk">
         <div class="col-md-8 col-sm-12 col-xs-12">
@@ -14,8 +14,8 @@
                 height="360"
                 controls
                 data-setup='{"playbackRates": [0.5, 1, 1.5, 2], "fluid": true}'>
-                <source src="/media/Video/{{ object.video_file }}" type="video/mp4">
-           
+                <source src="{{ object.video_file.url }}" type="video/mp4">
+                <source src="{{ object.video_file.url }}" type="video/webm">
                
             </video>
             <h5 class="mt-4">{{ object.title }}</h5>

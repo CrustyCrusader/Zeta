@@ -11,14 +11,13 @@
             {{ form.as_p }}
             <input type="submit" value="Upload">
         </form>
-        {% if videos %}
-        <h2>Videos</h2>
-        {% for video in videos %}
+   
+      
+    
         <video controls>
             <source src="media/Video" type="video/mp4">
         </video>
-        <p>{{ video.title }}</p>
-        {% endfor %}
-        {% endif %}
+        
+       
     </body>
     {% endblock %}

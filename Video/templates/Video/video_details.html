@@ -1,30 +1,61 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>{{ object.title }}</h1>
-<p>{{ object.description }}</p>
 
-<div class="container">
-    <div class="idk">
-        <div class="col-md-8 col-sm-12 col-xs-12">
-            <video
-                width="480"
-                height="360"
-                controls
-                data-setup='{"playbackRates": [0.5, 1, 1.5, 2], "fluid": true}'>
-                <source src="{{ object.video_file.url }}" type="video/mp4">
-                <source src="{{ object.video_file.url }}" type="video/webm">
-               
-            </video>
-            <h5 class="mt-4">{{ object.title }}</h5>
-            <div class="row">
-                <div class="col-md-6 text-muted">
-                    <p>{{ object.date_posted | date:"M d, Y" }}</p>
-                </div>
-                
-                
-                <!-- Modal -->
-               
-        </div>
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="video-detail-page">
+
+    <h1>{{ video.title }}</h1>
+
+    <p class="video-detail-meta">
+        Posted by <strong>{{ video.author.username }}</strong>
+        on {{ video.created|date:"M d, Y" }}
+    </p>
+
+    <div class="video-player-container">
+        <video
+            controls
+            class="video-player"
+            {% if video.thumbnail %}
+                poster="{{ video.thumbnail.url }}"
+            {% endif %}
+        >
+            <source src="{{ video.video.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
+
+    {% if video.description %}
+        <div class="video-description-box">
+            <h3>Description</h3>
+            <p>{{ video.description }}</p>
+        </div>
+    {% endif %}
+
+    <div class="video-info">
+        <span><strong>Views:</strong> {{ video.views }}</span>
+        <span><strong>Visibility:</strong> {{ video.get_visibility_display }}</span>
+    </div>
+
+    {% if user == video.author %}
+        <div class="video-actions">
+            <a
+                href="{% url 'Video:video_update' video.id %}"
+                class="video-edit-btn"
+            >
+                Edit Video
+            </a>
+
+            <a
+                href="{% url 'Video:video_delete' video.id %}"
+                class="video-delete-btn"
+            >
+                Delete Video
+            </a>
+        </div>
+    {% endif %}
+
 </div>
+
 {% endblock %}
+

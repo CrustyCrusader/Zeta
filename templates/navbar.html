@@ -1,8 +1,35 @@
-
 <div class="navbar">
-<a href="/">Home</a>
-<a href="/admin">Admin</a>
-<a href="/Video/">Video</a>
-<a href="/products/">Shop</a>
-<a href="/blog/">Blog</a>
+    <a href="{% url 'home' %}">Home</a>
+
+```
+<a href="{% url 'Video:video_list' %}">Videos</a>
+
+<a href="{% url 'profile' %}">Profile</a>
+
+<a href="{% url 'products:product-list' %}">Shop</a>
+
+<a href="{% url 'articles:article-list' %}">Blog</a>
+
+{% if user.is_authenticated %}
+
+    <a href="{% url 'profile_edit' %}">Edit Profile</a>
+
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+
+{% else %}
+
+    <a href="{% url 'login' %}">Login</a>
+
+    <a href="{% url 'register' %}">Register</a>
+
+{% endif %}
+
+{% if user.is_staff %}
+    <a href="/admin/">Admin</a>
+{% endif %}
+```
+
 </div>

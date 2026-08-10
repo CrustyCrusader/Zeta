@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="profile-header">
+
+```
+{% if profile.banner %}
+    <div class="profile-banner">
+        <img
+            src="{{ profile.banner.url }}"
+            alt="Profile banner"
+        >
+    </div>
+{% endif %}
+
+<div class="profile-info">
+
+    {% if profile.avatar %}
+        <img
+            src="{{ profile.avatar.url }}"
+            alt="{{ profile.user.username }}"
+            class="profile-avatar"
+        >
+    {% endif %}
+
+    <div class="profile-details">
+        <h1>{{ profile.user.username }}</h1>
+
+        {% if profile.bio %}
+            <p>{{ profile.bio }}</p>
+        {% endif %}
+
+        {% if profile.location %}
+            <p>📍 {{ profile.location }}</p>
+        {% endif %}
+
+        {% if profile.website %}
+            <p>
+                <a href="{{ profile.website }}" target="_blank">
+                    {{ profile.website }}
+                </a>
+            </p>
+        {% endif %}
+    </div>
+
+</div>
+
+<div class="profile-actions">
+    <a href="{% url 'profile_edit' %}">
+        Edit Profile
+    </a>
+</div>
+```
+
+</div>
+
+<hr>
+
+<h2>My Videos</h2>
+
+{% if videos %}
+
+```
+<div class="video-grid">
+
+    {% for video in videos %}
+
+        <div class="video-card">
+
+            <a href="{% url 'Video:video_details' video.id %}">
+
+                {% if video.thumbnail %}
+                    <img
+                        src="{{ video.thumbnail.url }}"
+                        alt="{{ video.title }}"
+                    >
+                {% endif %}
+
+                <h3>{{ video.title }}</h3>
+
+            </a>
+
+            <p>
+                {{ video.views }} views
+                ·
+                {{ video.created|date:"M d, Y" }}
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+```
+
+{% else %}
+
+```
+<p>You haven't uploaded any videos yet.</p>
+
+<a href="{% url 'Video:video_list' %}">
+    Browse Videos
+</a>
+```
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,203 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    {% if profile.banner %}
+        <div class="mb-4">
+            <img
+                src="{{ profile.banner.url }}"
+                alt="{{ profile_user.username }} banner"
+                style="
+                    width: 100%;
+                    height: 250px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                "
+            >
+        </div>
+    {% endif %}
+
+    <div class="text-center mb-4">
+
+        {% if profile.avatar %}
+            <img
+                src="{{ profile.avatar.url }}"
+                alt="{{ profile_user.username }}"
+                style="
+                    width: 150px;
+                    height: 150px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                    border: 4px solid white;
+                "
+            >
+        {% endif %}
+
+        <h1 class="mt-3">
+            {{ profile_user.username }}
+        </h1>
+
+        {% if profile.bio %}
+            <p>{{ profile.bio }}</p>
+        {% endif %}
+
+        {% if profile.location %}
+            <p>
+                <strong>Location:</strong>
+                {{ profile.location }}
+            </p>
+        {% endif %}
+
+        {% if profile.website %}
+            <p>
+                <a
+                    href="{{ profile.website }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {{ profile.website }}
+                </a>
+            </p>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Follow statistics -->
+
+    <div class="text-center mb-4">
+
+        <span class="me-4">
+            <strong>{{ follower_count }}</strong>
+            Followers
+        </span>
+
+        <span>
+            <strong>{{ following_count }}</strong>
+            Following
+        </span>
+
+    </div>
+
+
+    <!-- Follow button -->
+
+    {% if user.is_authenticated and user != profile_user %}
+
+        <div class="text-center mb-5">
+
+            {% if is_following %}
+
+                <form
+                    method="post"
+                    action="{% url 'unfollow_user' profile_user.username %}"
+                >
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">
+                        Unfollow
+                    </button>
+                </form>
+
+            {% else %}
+
+                <form
+                    method="post"
+                    action="{% url 'follow_user' profile_user.username %}"
+                >
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        Follow
+                    </button>
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- Videos -->
+
+    <h2 class="mb-4">
+        {{ profile_user.username }}'s Videos
+    </h2>
+
+    {% if videos %}
+
+        <div class="row g-4">
+
+            {% for video in videos %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card h-100">
+
+                        {% if video.thumbnail %}
+                            <img
+                                src="{{ video.thumbnail.url }}"
+                                class="card-img-top"
+                                alt="{{ video.title }}"
+                                style="
+                                    height: 220px;
+                                    object-fit: cover;
+                                "
+                            >
+                        {% endif %}
+
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title">
+                                {{ video.title }}
+                            </h5>
+
+                            <p class="text-muted small">
+                                {{ video.views }} views
+                                ·
+                                {{ video.created|date:"M d, Y" }}
+                            </p>
+
+                            {% if video.description %}
+                                <p class="card-text">
+                                    {{ video.description|truncatewords:20 }}
+                                </p>
+                            {% endif %}
+
+                            <a
+                                href="{% url 'Video:video_details' video.id %}"
+                                class="btn btn-primary mt-auto"
+                            >
+                                Watch Video
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="text-center py-5">
+
+            <h3>No videos yet.</h3>
+
+            <p class="text-muted">
+                {{ profile_user.username }} hasn't uploaded any videos.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+

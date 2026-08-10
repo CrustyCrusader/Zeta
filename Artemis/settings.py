@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     'Video',
     'blog',
     'accounts',
-    'profiles',
-
+    'profiles.apps.ProfilesConfig',
+    
 ]
 
 MIDDLEWARE = [

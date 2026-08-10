@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+
+<h1>Create Account</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Register</button>
+</form>
+
+<p>
+    Already have an account?
+    <a href="{% url 'login' %}">Log in</a>
+</p>
+    <footer>
+
+    </footer>
+{% endblock %} 

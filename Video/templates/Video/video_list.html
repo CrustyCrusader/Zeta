@@ -1,11 +1,96 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 
-{% for instance in object_list %}
-     <p>{{ instance.id }} - <a href='{{instance.get_absolute_url }}'>{{ instance.title }}</a></p>
-{% endfor %}
+<div class="video-page">
 
+    <div class="video-header">
+        <div>
+            <h1>Videos</h1>
+            <p>Watch videos from the Zeta community.</p>
+        </div>
 
+        {% if user.is_authenticated %}
+            <a href="{% url 'Video:video_upload' %}" class="video-upload-btn">
+                Upload Video
+            </a>
+        {% endif %}
+    </div>
+
+    {% if object_list %}
+
+        <div class="video-grid">
+
+            {% for video in object_list %}
+
+                <article class="video-card">
+
+                    <a href="{% url 'Video:video_details' video.id %}" class="video-thumbnail">
+
+                        {% if video.thumbnail %}
+                            <img
+                                src="{{ video.thumbnail.url }}"
+                                alt="{{ video.title }}"
+                            >
+                        {% else %}
+                            <div class="video-no-thumbnail">
+                                No Thumbnail
+                            </div>
+                        {% endif %}
+
+                    </a>
+
+                    <div class="video-card-content">
+
+                        <h2>
+                            <a href="{% url 'Video:video_details' video.id %}">
+                                {{ video.title }}
+                            </a>
+                        </h2>
+
+                        <p class="video-author">
+                            {{ video.author.username }}
+                        </p>
+
+                        {% if video.description %}
+                            <p class="video-description">
+                                {{ video.description|truncatewords:18 }}
+                            </p>
+                        {% endif %}
+
+                        <div class="video-meta">
+                            <span>{{ video.views }} views</span>
+                            <span>{{ video.created|date:"M d, Y" }}</span>
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="video-empty">
+
+            <h2>No videos yet</h2>
+
+            {% if user.is_authenticated %}
+                <p>Be the first person to upload a video.</p>
+
+                <a href="{% url 'Video:video_upload' %}" class="video-upload-btn">
+                    Upload Video
+                </a>
+            {% else %}
+                <p>Log in to upload a video.</p>
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
 
 {% endblock %}

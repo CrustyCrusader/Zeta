@@ -1,25 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <head>
-        <title>Upload Video</title>
-    </head>
-    <body>
-        <h1>Upload Video</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Upload">
-        </form>
-   
-      
-    
-        <video controls>
-            <source src="media/Video" type="video/mp4">
-            <source src="media/Video" type="video/webm">
-        </video>
-        =
-        {% endfor %}
+
+<div class="container py-4">
+
+```
+<h1 class="mb-4">
+    {% if object %}
+        Edit Video
+    {% else %}
+        Upload Video
+    {% endif %}
+</h1>
+
+<form method="post" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">
+        {% if object %}
+            Save Changes
+        {% else %}
+            Upload Video
         {% endif %}
-    </body>
-    {% endblock %}
+    </button>
+
+    <a
+        href="{% url 'Video:video_list' %}"
+        class="btn btn-secondary"
+    >
+        Cancel
+    </a>
+
+</form>
+```
+
+</div>
+
+{% endblock %}

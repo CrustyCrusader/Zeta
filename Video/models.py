@@ -3,11 +3,10 @@ from django.db import models
 
 
 class Video(models.Model):
-
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="videos"
+        related_name="videos",
     )
 
     title = models.CharField(max_length=200)

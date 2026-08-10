@@ -1,24 +1,19 @@
 from django.urls import path
-from django.conf.urls.static import static
-from django.conf import settings
-from .views import ( 
+
+from .views import (
     VideoCreateView,
-   VideoDeleteView,
-   VideoDetailView,
-   VideoListView,
-   VideoUpdateView,
+    VideoDeleteView,
+    VideoDetailView,
+    VideoListView,
+    VideoUpdateView,
 )
 
-    
-  
+app_name = 'Video'
 
-app_name ='Video'
 urlpatterns = [
-    path('',VideoListView.as_view(), name='video_list'),
-    path('upload/', VideoCreateView.as_view(), name='video_list'),
-    path('<int:id>/',VideoDetailView.as_view(), name='video_details'),
-    path('<int:id>/update/',VideoUpdateView.as_view(), name='video_update'),
-    path('<int:id>/delete/',VideoDeleteView.as_view(), name='video_delete'),
-
+    path('', VideoListView.as_view(), name='video_list'),
+    path('upload/', VideoCreateView.as_view(), name='video_upload'),
+    path('<int:id>/', VideoDetailView.as_view(), name='video_details'),
+    path('<int:id>/update/', VideoUpdateView.as_view(), name='video_update'),
+    path('<int:id>/delete/', VideoDeleteView.as_view(), name='video_delete'),
 ]
-

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="profile-list-page">
+
+    <h1>{{ profile_user.username }} is Following</h1>
+
+    <p>
+        {{ following|length }} following
+    </p>
+
+    {% if following %}
+
+        <div class="user-list">
+
+            {% for user in following %}
+
+                <div class="user-card">
+
+                    <a href="{% url 'public_profile' user.username %}">
+
+                        {% if user.profile.avatar %}
+                            <img
+                                src="{{ user.profile.avatar.url }}"
+                                alt="{{ user.username }}"
+                                class="user-avatar"
+                            >
+                        {% else %}
+                            <div class="user-avatar-placeholder">
+                                {{ user.username|first|upper }}
+                            </div>
+                        {% endif %}
+
+                    </a>
+
+                    <div class="user-info">
+
+                        <a
+                            href="{% url 'public_profile' user.username %}"
+                            class="username"
+                        >
+                            {{ user.username }}
+                        </a>
+
+                        {% if user.profile.bio %}
+                            <p>{{ user.profile.bio|truncatewords:15 }}</p>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <p>{{ profile_user.username }} isn't following anyone yet.</p>
+
+    {% endif %}
+
+    <a
+        href="{% url 'public_profile' profile_user.username %}"
+        class="back-link"
+    >
+        ← Back to Profile
+    </a>
+
+</div>
+
+{% endblock %}

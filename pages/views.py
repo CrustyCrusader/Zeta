@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from accounts.models import User
 
 # Create your views here.
 def home_view(request, *args, **kwargs): # *args, **kwargs
@@ -25,4 +27,23 @@ def about_view(request, *args, **kwargs):
 
 
 def social_view(request, *args, **kwargs):
-    return HttpResponse("<h1>Socail Page</h1>")
+    return HttpResponse("<h1>Social Page</h1>")
+
+def user_search(request):
+    query = request.GET.get("q", "").strip()
+
+    users = User.objects.none()
+
+    if query:
+        users = User.objects.filter(
+            username__icontains=query
+        ).order_by("username")
+
+    return render(
+        request,
+        "pages/user_search.html",
+        {
+            "query": query,
+            "users": users,
+        },
+    )

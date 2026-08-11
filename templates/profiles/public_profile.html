@@ -68,19 +68,19 @@
 
     <!-- Follow statistics -->
 
-    <div class="text-center mb-4">
+<div class="profile-stats">
 
-        <span class="me-4">
-            <strong>{{ follower_count }}</strong>
-            Followers
-        </span>
+    <a href="{% url 'followers_list' profile_user.username %}">
+        <strong>{{ follower_count }}</strong>
+        <span>Followers</span>
+    </a>
 
-        <span>
-            <strong>{{ following_count }}</strong>
-            Following
-        </span>
+    <a href="{% url 'following_list' profile_user.username %}">
+        <strong>{{ following_count }}</strong>
+        <span>Following</span>
+    </a>
 
-    </div>
+</div>
 
 
     <!-- Follow button -->

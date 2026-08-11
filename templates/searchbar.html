@@ -1,7 +1,11 @@
-
 <div class="search-bar">
-    <form>
-      <input type="text" placeholder="Search...">
-      <input type="submit" value="Search">
+    <form method="get" action="{% url 'user_search' %}">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search users..."
+            value="{{ request.GET.q }}"
+        >
+        <input type="submit" value="Search">
     </form>
-  </div>
+</div>

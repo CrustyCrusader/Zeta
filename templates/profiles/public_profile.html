@@ -116,4 +116,90 @@
 
 </div>
 
+
+<!-- Articles -->
+
+<div class="profile-content-section">
+
+    <h2 class="mb-4">
+        {{ profile_user.username }}'s Articles
+    </h2>
+
+    {% if articles %}
+
+        <div class="article-grid">
+
+            {% for article in articles %}
+
+                <article class="article-card">
+
+                    <div class="article-card-content">
+
+                        <div class="article-meta">
+
+                            {% if article.author %}
+                                By
+                                <a
+                                    href="{% url 'public_profile' article.author.username %}"
+                                >
+                                    {{ article.author.username }}
+                                </a>
+                            {% endif %}
+
+                        </div>
+
+                        <h2>
+                            <a
+                                href="{% url 'articles:article-detail' article.id %}"
+                            >
+                                {{ article.title }}
+                            </a>
+                        </h2>
+
+                        <p class="article-excerpt">
+                            {{ article.content|truncatewords:30 }}
+                        </p>
+
+                        <div class="article-footer">
+
+                            <span class="article-number">
+                                Article #{{ article.id }}
+                            </span>
+
+                            <a
+                                href="{% url 'articles:article-detail' article.id %}"
+                                class="article-read-btn"
+                            >
+                                Read Article →
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="profile-empty-content">
+
+            <h3>No articles yet.</h3>
+
+            <p>
+                {{ profile_user.username }} hasn't published any articles.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+
+
 {% endblock %}

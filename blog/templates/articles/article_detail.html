@@ -1,6 +1,60 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>{{ object.title }}</h1>
-<p>{{ object.content }}</p>
+
+<div class="article-detail-page">
+
+
+<div class="article-header">
+
+    <h1>{{ object.title }}</h1>
+
+    <div class="article-meta">
+        {% if object.author %}
+            <span>By {{ object.author.username }}</span>
+        {% endif %}
+
+        {% if object.created %}
+            <span>{{ object.created|date:"M d, Y" }}</span>
+        {% endif %}
+    </div>
+
+</div>
+
+
+<div class="article-content-box">
+
+    {{ object.content|linebreaks }}
+
+</div>
+
+
+{% if user.is_authenticated and object.author == user %}
+
+    <div class="article-actions">
+
+        <a
+            href="{% url 'articles:article-update' object.id %}"
+            class="article-edit-btn"
+        >
+            Edit Article
+        </a>
+
+        <a
+            href="{% url 'articles:article-delete' object.id %}"
+            class="article-delete-btn"
+        >
+            Delete Article
+        </a>
+
+    </div>
+
+{% endif %}
+
+
+{% include "comments/comment_list.html" with comments=comments comment_form=comment_form content_type_id=content_type_id object_id=object.id %}
+
+
+</div>
+
 {% endblock %}

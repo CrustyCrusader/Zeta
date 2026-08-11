@@ -14,6 +14,10 @@ class Article(models.Model):
     title = models.CharField(max_length=120)
     content = models.TextField()
     active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+   
 
     def get_absolute_url(self):
         return reverse("articles:article-detail", kwargs={"id": self.id})

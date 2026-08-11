@@ -14,17 +14,21 @@ def profile_detail(request):
     )
 
     videos = request.user.videos.all().order_by("-created")
+    
+    articles = request.user.articles.filter(active=True).order_by("-created")
+    
     likes_count = request.user.video_likes.count()
 
     return render(
         request,
         "profiles/profile_detail.html",
-        {
-            "profile": profile,
-            "videos": videos,
-            "likes_count": likes_count,
-        },
-    )
+    {
+        "profile": profile,
+        "videos": videos,
+        "articles": articles,
+        "likes_count": likes_count,
+    },
+)
 
 @login_required
 def profile_edit(request):
@@ -65,6 +69,8 @@ def public_profile(request, username):
     )
 
     videos = user.videos.all().order_by("-created")
+    
+    articles = user.articles.filter(active=True).order_by("-created")
 
     follower_count = user.followers.count()
     following_count = user.following.count()
@@ -80,19 +86,20 @@ def public_profile(request, username):
         ).exists()
 
     return render(
-        request,
-        "profiles/public_profile.html",
-        {
-            "profile": profile,
-            "profile_user": user,
-            "videos": videos,
-            "follower_count": follower_count,
-            "following_count": following_count,
-            "likes_count": likes_count,
-            "is_following": is_following,
-            "is_owner": is_owner,
-        },
-    )
+    request,
+    "profiles/public_profile.html",
+    {
+        "profile": profile,
+        "profile_user": user,
+        "videos": videos,
+        "articles": articles,
+        "follower_count": follower_count,
+        "following_count": following_count,
+        "likes_count": likes_count,
+        "is_following": is_following,
+        "is_owner": is_owner,
+    },
+)
 
 
 

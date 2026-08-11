@@ -1,4 +1,8 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+)
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import (
@@ -9,9 +13,11 @@ from django.views.generic import (
     DeleteView,
 )
 
+from comments.forms import CommentForm
+from comments.models import Comment
+
 from .forms import ArticleModelForm
 from .models import Article
-
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
     template_name = "articles/article_create.html"
@@ -24,7 +30,15 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 
 class ArticleListView(ListView):
     template_name = "articles/article_list.html"
-    queryset = Article.objects.all()
+
+    def get_queryset(self):
+        articles = Article.objects.all()
+
+        print("BLOG ARTICLES:", list(
+            articles.values_list("id", "title")
+        ))
+
+        return articles
 
 
 class ArticleDetailView(DetailView):
@@ -32,7 +46,30 @@ class ArticleDetailView(DetailView):
 
     def get_object(self):
         id_ = self.kwargs.get("id")
-        return get_object_or_404(Article, id=id_)
+        return get_object_or_404(
+            Article,
+            id=self.kwargs.get("id"),
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        content_type = ContentType.objects.get_for_model(Article)
+
+        context["content_type_id"] = content_type.id
+
+        context["comments"] = (
+            Comment.objects
+            .filter(
+                content_type=content_type,
+                object_id=self.object.id,
+            )
+            .select_related("author")
+        )
+
+        context["comment_form"] = CommentForm()
+
+        return context
 
 
 class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

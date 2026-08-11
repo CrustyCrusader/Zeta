@@ -1086,3 +1086,371 @@ footer {
     text-align: center;
     padding: var(--sp-4) 0;
 }
+
+
+/* =========================
+   ARTICLE DETAIL PAGE
+   ========================= */
+
+.article-detail-page {
+    width: 100%;
+    max-width: 1150px;
+    margin: 40px auto;
+    padding: 0 25px;
+    box-sizing: border-box;
+}
+
+.article-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.article-header h1 {
+    color: #594e47;
+    font-size: 42px;
+    margin: 0 0 12px;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    color: #5f5955;
+    font-size: 14px;
+}
+
+.article-content-box {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #9f9a98;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.article-content-box p {
+    color: #403b37;
+    line-height: 1.8;
+    font-size: 16px;
+    margin: 0 0 18px;
+}
+
+.article-content-box p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================
+   ARTICLE ACTIONS
+   ========================= */
+
+.article-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px auto;
+}
+
+.article-edit-btn,
+.article-delete-btn {
+    padding: 11px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.article-edit-btn {
+    background-color: #594e47;
+    color: white;
+}
+
+.article-edit-btn:hover {
+    background-color: #3f3732;
+    color: white;
+}
+
+.article-delete-btn {
+    background-color: #8b4545;
+    color: white;
+}
+
+.article-delete-btn:hover {
+    background-color: #6d3333;
+    color: white;
+}
+
+
+/* =========================
+   ARTICLE MOBILE
+   ========================= */
+
+@media (max-width: 700px) {
+
+    .article-detail-page {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .article-header h1 {
+        font-size: 32px;
+    }
+
+    .article-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .article-content-box {
+        padding: 20px;
+    }
+
+    .article-content-box p {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .article-actions {
+        flex-direction: column;
+    }
+
+    .article-edit-btn,
+    .article-delete-btn {
+        text-align: center;
+    }
+}
+
+
+/* =========================
+   BLOG
+   ========================= */
+
+.blog-page {
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 25px;
+    box-sizing: border-box;
+}
+
+.blog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.blog-header h1 {
+    margin: 0 0 8px;
+    color: #594e47;
+    font-size: 42px;
+}
+
+.blog-header p {
+    margin: 0;
+    color: #5f5955;
+}
+
+.blog-create-btn {
+    display: inline-block;
+    background-color: #594e47;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.blog-create-btn:hover {
+    background-color: #3f3732;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+
+/* Article grid */
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(320px, 1fr)
+    );
+    gap: 28px;
+}
+
+
+/* Article card */
+
+.article-card {
+    background-color: #9f9a98;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Card content */
+
+.article-card-content {
+    padding: 25px;
+}
+
+.article-meta {
+    margin-bottom: 12px;
+    color: #594e47;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.article-meta a {
+    color: #594e47;
+    text-decoration: none;
+}
+
+.article-meta a:hover {
+    text-decoration: underline;
+}
+
+
+/* Title */
+
+.article-card h2 {
+    margin: 0 0 14px;
+    font-size: 25px;
+    line-height: 1.25;
+}
+
+.article-card h2 a {
+    color: #2e2a22;
+    text-decoration: none;
+}
+
+.article-card h2 a:hover {
+    color: #594e47;
+}
+
+
+/* Excerpt */
+
+.article-excerpt {
+    color: #403b37;
+    line-height: 1.65;
+    margin-bottom: 25px;
+}
+
+
+/* Bottom section */
+
+.article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-top: 1px solid rgba(46, 42, 34, 0.2);
+    padding-top: 15px;
+}
+
+.article-number {
+    color: #5f5955;
+    font-size: 13px;
+}
+
+
+/* Read button */
+
+.article-read-btn {
+    display: inline-block;
+    background-color: #594e47;
+    color: #ffffff;
+    padding: 9px 15px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.article-read-btn:hover {
+    background-color: #3f3732;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+
+/* Empty state */
+
+.blog-empty {
+    text-align: center;
+    background-color: #9f9a98;
+    padding: 70px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.blog-empty h2 {
+    color: #594e47;
+    margin-bottom: 10px;
+}
+
+.blog-empty p {
+    color: #403b37;
+    margin-bottom: 25px;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .blog-page {
+        margin: 25px auto;
+        padding: 0 15px;
+    }
+
+    .blog-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .blog-header h1 {
+        font-size: 34px;
+    }
+
+    .blog-create-btn {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .article-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .article-card-content {
+        padding: 20px;
+    }
+
+    .article-card h2 {
+        font-size: 22px;
+    }
+
+    .article-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .article-read-btn {
+        text-align: center;
+    }
+}

@@ -1,64 +1,63 @@
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import (
     CreateView,
     DetailView,
     ListView,
     UpdateView,
-    ListView,
-    DeleteView
+    DeleteView,
 )
 
 from .forms import ArticleModelForm
 from .models import Article
 
 
-class ArticleCreateView(CreateView):
-    template_name = 'articles/article_create.html'
+class ArticleCreateView(LoginRequiredMixin, CreateView):
+    template_name = "articles/article_create.html"
     form_class = ArticleModelForm
-    queryset = Article.objects.all() # <blog>/<modelname>_list.html
-    #success_url = '/'
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
-    #def get_success_url(self):
-    #    return '/'
 
 class ArticleListView(ListView):
-    template_name = 'articles/article_list.html'
-    queryset = Article.objects.all() # <blog>/<modelname>_list.html
+    template_name = "articles/article_list.html"
+    queryset = Article.objects.all()
 
 
 class ArticleDetailView(DetailView):
-    template_name = 'articles/article_detail.html'
-    #queryset = Article.objects.all()
+    template_name = "articles/article_detail.html"
 
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Article, id=id_)
 
 
-class ArticleUpdateView(UpdateView):
-    template_name = 'articles/article_create.html'
+class ArticleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    template_name = "articles/article_create.html"
     form_class = ArticleModelForm
 
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Article, id=id_)
 
-    def form_valid(self, form):
-        print(form.cleaned_data)
-        return super().form_valid(form)
+    def test_func(self):
+        article = self.get_object()
+        return article.author == self.request.user
 
 
-class ArticleDeleteView(DeleteView):
-    template_name = 'articles/article_delete.html'
-    
+class ArticleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    template_name = "articles/article_delete.html"
+
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Article, id=id_)
 
+    def test_func(self):
+        article = self.get_object()
+        return article.author == self.request.user
+
     def get_success_url(self):
-        return reverse('articles:article-list')
+        return reverse("articles:article-list")

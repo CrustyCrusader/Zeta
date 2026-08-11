@@ -4,54 +4,59 @@
 
 <div class="profile-header">
 
-```
-{% if profile.banner %}
-    <div class="profile-banner">
-        <img
-            src="{{ profile.banner.url }}"
-            alt="Profile banner"
-        >
-    </div>
-{% endif %}
-
-<div class="profile-info">
-
-    {% if profile.avatar %}
-        <img
-            src="{{ profile.avatar.url }}"
-            alt="{{ profile.user.username }}"
-            class="profile-avatar"
-        >
+    {% if profile.banner %}
+        <div class="profile-banner">
+            <img
+                src="{{ profile.banner.url }}"
+                alt="Profile banner"
+            >
+        </div>
     {% endif %}
 
-    <div class="profile-details">
-        <h1>{{ profile.user.username }}</h1>
+    <div class="profile-info">
 
-        {% if profile.bio %}
-            <p>{{ profile.bio }}</p>
+        {% if profile.avatar %}
+            <img
+                src="{{ profile.avatar.url }}"
+                alt="{{ profile.user.username }}"
+                class="profile-avatar"
+            >
         {% endif %}
 
-        {% if profile.location %}
-            <p>📍 {{ profile.location }}</p>
-        {% endif %}
+        <div class="profile-details">
+            <h1>{{ profile.user.username }}</h1>
 
-        {% if profile.website %}
-            <p>
-                <a href="{{ profile.website }}" target="_blank">
-                    {{ profile.website }}
-                </a>
-            </p>
-        {% endif %}
+            {% if profile.bio %}
+                <p>{{ profile.bio }}</p>
+            {% endif %}
+
+            {% if profile.location %}
+                <p>📍 {{ profile.location }}</p>
+            {% endif %}
+
+            {% if profile.website %}
+                <p>
+                    <a href="{{ profile.website }}" target="_blank">
+                        {{ profile.website }}
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+
     </div>
 
-</div>
+    <div class="profile-stats">
+        <a href="{% url 'Video:liked_videos' profile.user.username %}">
+            <strong>{{ likes_count }}</strong>
+            <span>Likes</span>
+        </a>
+    </div>
 
-<div class="profile-actions">
-    <a href="{% url 'profile_edit' %}">
-        Edit Profile
-    </a>
-</div>
-```
+    <div class="profile-actions">
+        <a href="{% url 'profile_edit' %}">
+            Edit Profile
+        </a>
+    </div>
 
 </div>
 
@@ -61,48 +66,44 @@
 
 {% if videos %}
 
-```
-<div class="video-grid">
+    <div class="video-grid">
 
-    {% for video in videos %}
+        {% for video in videos %}
 
-        <div class="video-card">
+            <div class="video-card">
 
-            <a href="{% url 'Video:video_details' video.id %}">
+                <a href="{% url 'Video:video_details' video.id %}">
 
-                {% if video.thumbnail %}
-                    <img
-                        src="{{ video.thumbnail.url }}"
-                        alt="{{ video.title }}"
-                    >
-                {% endif %}
+                    {% if video.thumbnail %}
+                        <img
+                            src="{{ video.thumbnail.url }}"
+                            alt="{{ video.title }}"
+                        >
+                    {% endif %}
 
-                <h3>{{ video.title }}</h3>
+                    <h3>{{ video.title }}</h3>
 
-            </a>
+                </a>
 
-            <p>
-                {{ video.views }} views
-                ·
-                {{ video.created|date:"M d, Y" }}
-            </p>
+                <p>
+                    {{ video.views }} views
+                    ·
+                    {{ video.created|date:"M d, Y" }}
+                </p>
 
-        </div>
+            </div>
 
-    {% endfor %}
+        {% endfor %}
 
-</div>
-```
+    </div>
 
 {% else %}
 
-```
-<p>You haven't uploaded any videos yet.</p>
+    <p>You haven't uploaded any videos yet.</p>
 
-<a href="{% url 'Video:video_list' %}">
-    Browse Videos
-</a>
-```
+    <a href="{% url 'Video:video_list' %}">
+        Browse Videos
+    </a>
 
 {% endif %}
 

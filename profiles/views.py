@@ -14,6 +14,7 @@ def profile_detail(request):
     )
 
     videos = request.user.videos.all().order_by("-created")
+    likes_count = request.user.video_likes.count()
 
     return render(
         request,
@@ -21,9 +22,9 @@ def profile_detail(request):
         {
             "profile": profile,
             "videos": videos,
+            "likes_count": likes_count,
         },
     )
-
 
 @login_required
 def profile_edit(request):
@@ -67,8 +68,10 @@ def public_profile(request, username):
 
     follower_count = user.followers.count()
     following_count = user.following.count()
+    likes_count = user.video_likes.count()
 
     is_following = False
+    is_owner = request.user.is_authenticated and request.user == user
 
     if request.user.is_authenticated:
         is_following = Follow.objects.filter(
@@ -85,7 +88,9 @@ def public_profile(request, username):
             "videos": videos,
             "follower_count": follower_count,
             "following_count": following_count,
+            "likes_count": likes_count,
             "is_following": is_following,
+            "is_owner": is_owner,
         },
     )
 

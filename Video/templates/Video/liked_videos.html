@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="profile-list-page">
+
+    <h1>{{ profile_user.username }}'s Liked Videos</h1>
+
+    {% if not is_owner %}
+        <p>Videos {{ profile_user.username }} has liked.</p>
+    {% endif %}
+
+</div>
+
+{% if likes %}
+
+    <div class="video-grid">
+
+        {% for like in likes %}
+
+            <div class="video-card">
+
+                <a href="{% url 'Video:video_details' like.video.id %}">
+
+                    {% if like.video.thumbnail %}
+                        <img
+                            src="{{ like.video.thumbnail.url }}"
+                            alt="{{ like.video.title }}"
+                        >
+                    {% endif %}
+
+                    <h3>{{ like.video.title }}</h3>
+
+                </a>
+
+                <p>
+                    by {{ like.video.author.username }}
+                    ·
+                    {{ like.video.views }} views
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="video-empty">
+        <h2>No liked videos yet</h2>
+        <p>
+            {% if is_owner %}
+                Videos you like will show up here.
+            {% else %}
+                {{ profile_user.username }} hasn't liked any videos yet.
+            {% endif %}
+        </p>
+    </div>
+
+{% endif %}
+
+<a href="{% url 'public_profile' profile_user.username %}" class="back-link">
+    ← Back to profile
+</a>
+
+{% endblock %}

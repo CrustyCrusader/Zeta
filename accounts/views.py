@@ -1,10 +1,8 @@
 from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 
 from .forms import RegistrationForm
-from .models import Follow, User
 
 
 def register(request):
@@ -19,30 +17,6 @@ def register(request):
         form = RegistrationForm()
 
     return render(request, "accounts/register.html", {"form": form})
-
-@login_required
-def follow_user(request, username):
-    user_to_follow = get_object_or_404(User, username=username)
-
-    if user_to_follow != request.user:
-        Follow.objects.get_or_create(
-            follower=request.user,
-            following=user_to_follow,
-        )
-
-    return redirect("public_profile", username=username)
-
-
-@login_required
-def unfollow_user(request, username):
-    user_to_unfollow = get_object_or_404(User, username=username)
-
-    Follow.objects.filter(
-        follower=request.user,
-        following=user_to_unfollow,
-    ).delete()
-
-    return redirect("public_profile", username=username)
 
 
 class UserLoginView(LoginView):

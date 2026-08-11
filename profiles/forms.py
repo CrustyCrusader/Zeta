@@ -13,6 +13,7 @@ class ProfileForm(forms.ModelForm):
             "website",
             "location",
             "birth_date",
+            "likes_public",
         )
         widgets = {
             "birth_date": forms.DateInput(

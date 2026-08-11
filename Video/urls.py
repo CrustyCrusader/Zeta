@@ -1,5 +1,5 @@
 from django.urls import path
-
+from . import views
 from .views import (
     VideoCreateView,
     VideoDeleteView,
@@ -16,4 +16,6 @@ urlpatterns = [
     path('<int:id>/', VideoDetailView.as_view(), name='video_details'),
     path('<int:id>/update/', VideoUpdateView.as_view(), name='video_update'),
     path('<int:id>/delete/', VideoDeleteView.as_view(), name='video_delete'),
+    path("<int:id>/like/", views.toggle_like, name="toggle_like"),
+    path("liked/<str:username>/", views.liked_videos, name="liked_videos"),
 ]

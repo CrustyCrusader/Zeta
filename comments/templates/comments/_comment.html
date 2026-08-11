@@ -1,0 +1,32 @@
+<div class="comment" id="comment-{{ comment.id }}">
+
+    <div class="comment-avatar">
+        {% if comment.author.profile.avatar %}
+            <img src="{{ comment.author.profile.avatar.url }}" alt="{{ comment.author.username }}">
+        {% else %}
+            <div class="comment-avatar-placeholder">
+                {{ comment.author.username|first|upper }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="comment-body">
+        <div class="comment-meta">
+            <span class="comment-author">{{ comment.author.username }}</span>
+            <span class="comment-date">{{ comment.created|date:"M d, Y" }}</span>
+        </div>
+        <p class="comment-content">{{ comment.content }}</p>
+    </div>
+
+    {% if request.user == comment.author %}
+        <button
+            type="button"
+            class="comment-delete-btn"
+            data-comment-id="{{ comment.id }}"
+            data-url="{% url 'comments:delete_comment' comment.id %}"
+        >
+            Delete
+        </button>
+    {% endif %}
+
+</div>

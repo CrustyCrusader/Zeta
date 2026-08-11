@@ -35,5 +35,7 @@ class Profile(models.Model):
         null=True
     )
 
+    likes_public = models.BooleanField(default=True)
+
     def __str__(self):
         return self.user.username

@@ -10,7 +10,7 @@ Results for "<strong>{{ query }}</strong>" </p>
 
 {% if users %}
 
-```
+
 <div class="user-list">
 
     {% for profile_user in users %}
@@ -54,29 +54,29 @@ Results for "<strong>{{ query }}</strong>" </p>
     {% endfor %}
 
 </div>
-```
+
 
 {% elif query %}
 
-```
+
 <div class="text-center py-5">
     <h3>No users found.</h3>
     <p>
         No users matched "{{ query }}".
     </p>
 </div>
-```
+
 
 {% else %}
 
-```
+
 <div class="text-center py-5">
     <h3>Search for a user</h3>
     <p>
         Enter a username above to find profiles.
     </p>
 </div>
-```
+
 
 {% endif %}
 

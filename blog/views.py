@@ -33,7 +33,8 @@ class ArticleListView(ListView):
 
     def get_queryset(self):
         articles = Article.objects.all()
-
+        paginate_by = 12
+        
         print("BLOG ARTICLES:", list(
             articles.values_list("id", "title")
         ))

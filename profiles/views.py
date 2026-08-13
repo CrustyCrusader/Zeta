@@ -2,6 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import Follow, User
+from notifications.utils import notify
+
+from messaging.utils import is_mutual_follow
 
 from .forms import ProfileForm
 from .models import Profile
@@ -58,6 +61,8 @@ def profile_edit(request):
 
 
 
+
+
 def public_profile(request, username):
     user = get_object_or_404(
         User,
@@ -84,6 +89,11 @@ def public_profile(request, username):
             follower=request.user,
             following=user,
         ).exists()
+        
+    can_message = (
+    request.user.is_authenticated
+    and is_mutual_follow(request.user, user)
+    )
 
     return render(
     request,
@@ -98,6 +108,7 @@ def public_profile(request, username):
         "likes_count": likes_count,
         "is_following": is_following,
         "is_owner": is_owner,
+        "can_message": can_message,
     },
 )
 
@@ -106,21 +117,18 @@ def public_profile(request, username):
 
 @login_required
 def follow_user(request, username):
-    profile_user = get_object_or_404(
-        User,
-        username=username,
-    )
+    profile_user = get_object_or_404(User, username=username)
 
     if request.user != profile_user:
-        Follow.objects.get_or_create(
+        follow, created = Follow.objects.get_or_create(
             follower=request.user,
             following=profile_user,
         )
+        if created:
+            notify(recipient=profile_user, actor=request.user, kind="follow")
 
-    return redirect(
-        "public_profile",
-        username=profile_user.username,
-    )
+    return redirect("public_profile", username=profile_user.username)
+    
 
 
 @login_required

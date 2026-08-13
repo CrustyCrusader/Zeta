@@ -1,10 +1,62 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from accounts.models import User
+from accounts.models import Follow
+from Video.models import Video
+from blog.models import Article
+from itertools import chain
 
 
 def home_view(request, *args, **kwargs):
-    return render(request, "home.html", {})
+    is_following_anyone = False
+
+    if request.user.is_authenticated:
+        is_following_anyone = Follow.objects.filter(
+            follower=request.user
+        ).exists()
+
+    if is_following_anyone:
+        following_ids = Follow.objects.filter(
+            follower=request.user
+        ).values_list("following_id", flat=True)
+
+        videos = Video.objects.filter(
+            author_id__in=following_ids,
+            visibility=Video.Visibility.PUBLIC,
+        )
+        articles = Article.objects.filter(
+            author_id__in=following_ids,
+            active=True,
+        )
+    else:
+        # Not logged in, or logged in but following nobody yet —
+        # fall back to public activity site-wide.
+        videos = Video.objects.filter(visibility=Video.Visibility.PUBLIC)
+        articles = Article.objects.filter(active=True)
+
+    videos = videos.select_related("author").order_by("-created")[:30]
+    articles = articles.select_related("author").order_by("-created")[:30]
+
+    # Videos and Articles are different models with different fields,
+    # so we can't sort them together in a single database query.
+    # Instead, tag each one with a "kind" and merge them in Python,
+    # then sort the combined list by date.
+    feed_items = list(chain(
+        ({"kind": "video", "obj": v, "created": v.created} for v in videos),
+        ({"kind": "article", "obj": a, "created": a.created} for a in articles),
+    ))
+
+    feed_items.sort(key=lambda item: item["created"], reverse=True)
+    feed_items = feed_items[:30]
+
+    return render(
+        request,
+        "home.html",
+        {
+            "feed_items": feed_items,
+            "is_following_anyone": is_following_anyone,
+        },
+    )
 
 
 def contact_view(request, *args, **kwargs):

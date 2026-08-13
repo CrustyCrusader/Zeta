@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="chat-page">
+
+    <div class="chat-header">
+        <a href="{% url 'messaging:conversation_list' %}" class="back-link">← Messages</a>
+        <h1>{{ display_name }}</h1>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+        {% for message in messages %}
+            <div class="chat-message {% if message.sender == request.user %}mine{% endif %}">
+                <span class="chat-message-author">{{ message.sender.username }}</span>
+                <p class="chat-message-content">{{ message.content }}</p>
+                <span class="chat-message-time">{{ message.created|date:"M d, H:i" }}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if has_more %}
+        <button type="button" id="load-earlier-btn" class="pagination-btn" data-conversation-id="{{ conversation.id }}">
+        Load earlier messages
+        </button>
+    {% endif %}
+
+
+    <form id="chat-form" class="chat-form">
+        <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+
+</div>
+
+<script>
+(function () {
+    const conversationId = "{{ conversation.id }}";
+    const currentUsername = "{{ request.user.username }}";
+
+    const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+    const socket = new WebSocket(protocol + window.location.host + "/ws/chat/" + conversationId + "/");
+
+    const messagesEl = document.getElementById("chat-messages");
+    
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("chat-input");
+
+    const loadEarlierBtn = document.getElementById("load-earlier-btn");
+
+    if (loadEarlierBtn) {
+        loadEarlierBtn.addEventListener("click", function () {
+            const earliestMessage = messagesEl.querySelector(".chat-message");
+        // We don't track message IDs in the DOM yet, so use the button's
+        // own tracking instead — simplest approach: refetch from the
+        // beginning each time using the last-known earliest id.
+            const beforeId = loadEarlierBtn.dataset.earliestId || "";
+            const url = "/messages/" + loadEarlierBtn.dataset.conversationId + "/earlier/"
+                + (beforeId ? "?before=" + beforeId : "?before=" + "{{ messages.0.id|default:'' }}");
+
+            fetch(url)
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    const scrollHeightBefore = messagesEl.scrollHeight;
+                    loadEarlierBtn.insertAdjacentHTML("afterend", data.html);
+                    messagesEl.scrollTop = messagesEl.scrollHeight - scrollHeightBefore;
+
+                    if (data.earliest_id) {
+                    loadEarlierBtn.dataset.earliestId = data.earliest_id;
+                    }
+
+                    if (!data.has_more) {
+                        loadEarlierBtn.remove();
+                }
+            });
+    });
+}
+
+    
+
+
+
+
+    function scrollToBottom() {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+    scrollToBottom();
+
+    socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+
+        const div = document.createElement("div");
+        div.className = "chat-message" + (data.sender === currentUsername ? " mine" : "");
+
+        const author = document.createElement("span");
+        author.className = "chat-message-author";
+        author.textContent = data.sender;
+
+        const content = document.createElement("p");
+        content.className = "chat-message-content";
+        content.textContent = data.message; // textContent, not innerHTML — avoids XSS from message content
+
+        const time = document.createElement("span");
+        time.className = "chat-message-time";
+        time.textContent = data.created;
+
+        div.appendChild(author);
+        div.appendChild(content);
+        div.appendChild(time);
+        messagesEl.appendChild(div);
+
+        scrollToBottom();
+    };
+
+    socket.onclose = function () {
+        console.warn("Chat connection closed.");
+    };
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+
+        socket.send(JSON.stringify({ message: text }));
+        input.value = "";
+    });
+})();
+</script>
+
+{% endblock %}

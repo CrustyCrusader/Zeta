@@ -8,6 +8,8 @@ from .models import Comment
 from .forms import CommentForm
 
 
+from notifications.utils import notify
+
 @login_required
 def add_comment(request, content_type_id, object_id):
     if request.method != "POST":
@@ -28,10 +30,10 @@ def add_comment(request, content_type_id, object_id):
     comment.object_id = obj.id
     comment.save()
 
-    # Render the new comment's HTML on the server, using the same
-    # partial template used for the initial page load. The browser
-    # just drops this HTML string into the page — no need to hand-build
-    # DOM elements in JavaScript.
+    # obj.author covers Video and Article — both have that field
+    if hasattr(obj, "author") and obj.author:
+        notify(recipient=obj.author, actor=request.user, kind="comment", target=obj)
+
     html = render_to_string(
         "comments/_comment.html",
         {"comment": comment, "request": request},

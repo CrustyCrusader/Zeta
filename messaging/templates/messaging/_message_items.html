@@ -1,0 +1,7 @@
+{% for message in messages %}
+    <div class="chat-message {% if message.sender == request.user %}mine{% endif %}">
+        <span class="chat-message-author">{{ message.sender.username }}</span>
+        <p class="chat-message-content">{{ message.content }}</p>
+        <span class="chat-message-time">{{ message.created|date:"M d, H:i" }}</span>
+    </div>
+{% endfor %}

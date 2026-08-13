@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="chat-list-page">
+
+    <h1>New Group</h1>
+
+    {% if form.participants.field.queryset.exists %}
+
+        <form method="post" class="chat-group-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Create Group</button>
+        </form>
+
+    {% else %}
+
+        <div class="video-empty">
+            <h2>No one to add yet</h2>
+            <p>You can only add people you mutually follow.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

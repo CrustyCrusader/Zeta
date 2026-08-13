@@ -12,7 +12,6 @@ class VideoForm(forms.ModelForm):
             "thumbnail",
             "visibility",
         ]
-
         widgets = {
             "description": forms.Textarea(
                 attrs={
@@ -21,3 +20,13 @@ class VideoForm(forms.ModelForm):
                 }
             ),
         }
+
+    def clean_video(self):
+        video = self.cleaned_data.get("video")
+        if video:
+            valid_extensions = [".mp4", ".mov"]
+            if not any(video.name.lower().endswith(ext) for ext in valid_extensions):
+                raise forms.ValidationError(
+                    "Please upload an MP4 or MOV file — other formats may not play on all devices."
+                )
+        return video

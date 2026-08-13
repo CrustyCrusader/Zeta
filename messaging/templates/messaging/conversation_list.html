@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="chat-list-page">
+
+    <div class="chat-list-header">
+        <h1>Messages</h1>
+        <a href="{% url 'messaging:create_group' %}" class="btn btn-secondary">New Group</a>
+    </div>
+
+    {% if conversations %}
+
+        <div class="chat-list">
+            {% for item in conversations %}
+                <a href="{% url 'messaging:conversation_detail' item.conversation.id %}" class="chat-list-item">
+                    <div class="chat-list-name">{{ item.display_name }}</div>
+                    {% if item.last_message %}
+                        <div class="chat-list-preview">
+                            {{ item.last_message.sender.username }}: {{ item.last_message.content|truncatechars:60 }}
+                        </div>
+                    {% else %}
+                        <div class="chat-list-preview">No messages yet.</div>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+
+    {% else %}
+
+        <div class="video-empty">
+            <h2>No conversations yet</h2>
+            <p>Message someone you mutually follow to start a chat.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

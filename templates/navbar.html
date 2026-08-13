@@ -1,35 +1,285 @@
-<div class="navbar">
-    <a href="{% url 'home' %}">Home</a>
+<nav class="navbar">
 
+    <button
+        type="button"
+        class="navbar-toggle"
+        id="navbar-toggle"
+        aria-expanded="false"
+        aria-controls="navbar-menu"
+        aria-label="Toggle navigation menu"
+    >
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 
-<a href="{% url 'Video:video_list' %}">Videos</a>
+    <div class="navbar-menu" id="navbar-menu">
 
-<a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'Video:video_list' %}">Videos</a>
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'products:product-list' %}">Shop</a>
+        <a href="{% url 'articles:article-list' %}">Blog</a>
 
-<a href="{% url 'products:product-list' %}">Shop</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile_edit' %}">Edit Profile</a>
+            <!-- Mobile fallback — panels are desktop-only, so mobile keeps real links -->
+            <a href="{% url 'notifications:notification_list' %}" class="navbar-mobile-only">Notifications</a>
+            <a href="{% url 'messaging:conversation_list' %}" class="navbar-mobile-only">Messages</a>
 
-<a href="{% url 'articles:article-list' %}">Blog</a>
+            <form method="post" action="{% url 'logout' %}" class="navbar-logout-form">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+
+        {% if user.is_staff %}
+            <a href="/admin/">Admin</a>
+        {% endif %}
+
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="navbar-icons">
+
+            <button type="button" class="nav-bell" id="notif-toggle" aria-label="Notifications">
+                🔔
+                <span class="nav-bell-badge" id="notif-badge" style="{% if unread_notification_count == 0 %}display:none;{% endif %}">
+                    {{ unread_notification_count }}
+                </span>
+            </button>
+
+            <button type="button" class="nav-bell" id="msg-toggle" aria-label="Messages">
+                ✉️
+            </button>
+
+        </div>
+
+        <!-- Notifications panel -->
+        <div class="side-panel" id="notif-panel">
+            <div class="side-panel-header">
+                <h3>Notifications</h3>
+                <button type="button" class="side-panel-close" data-close-panel="notif-panel">✕</button>
+            </div>
+            <div class="side-panel-body" id="notif-panel-body">
+                <p class="panel-empty">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Messages panel -->
+        <div class="side-panel" id="msg-panel">
+            <div class="side-panel-header">
+                <button type="button" class="side-panel-back" id="msg-panel-back" style="display:none;">← Back</button>
+                <h3 id="msg-panel-title">Messages</h3>
+                <button type="button" class="side-panel-close" data-close-panel="msg-panel">✕</button>
+            </div>
+
+            <div class="side-panel-body" id="msg-panel-list">
+                <p class="panel-empty">Loading...</p>
+            </div>
+
+            <div class="side-panel-chat" id="msg-panel-chat" style="display:none;">
+                <div class="chat-messages" id="panel-chat-messages"></div>
+                <form id="panel-chat-form" class="chat-form">
+                    <input type="text" id="panel-chat-input" placeholder="Type a message..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="side-panel-overlay" id="panel-overlay"></div>
+
+    {% endif %}
+
+</nav>
+
+<script>
+(function () {
+    const toggle = document.getElementById("navbar-toggle");
+    const menu = document.getElementById("navbar-menu");
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener("click", function () {
+        const isOpen = menu.classList.toggle("open");
+        toggle.classList.toggle("active", isOpen);
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    menu.querySelectorAll("a, button").forEach(function (el) {
+        el.addEventListener("click", function () {
+            menu.classList.remove("open");
+            toggle.classList.remove("active");
+            toggle.setAttribute("aria-expanded", "false");
+        });
+    });
+})();
+</script>
 
 {% if user.is_authenticated %}
+<script>
+(function () {
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    }
 
-    <a href="{% url 'profile_edit' %}">Edit Profile</a>
+    const overlay = document.getElementById("panel-overlay");
+    const notifPanel = document.getElementById("notif-panel");
+    const msgPanel = document.getElementById("msg-panel");
+    const notifToggle = document.getElementById("notif-toggle");
+    const msgToggle = document.getElementById("msg-toggle");
+    const notifBadge = document.getElementById("notif-badge");
 
-    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+    function closeAllPanels() {
+        notifPanel.classList.remove("open");
+        msgPanel.classList.remove("open");
+        overlay.classList.remove("visible");
+    }
 
-{% else %}
+    function openPanel(panel) {
+        closeAllPanels();
+        panel.classList.add("open");
+        overlay.classList.add("visible");
+    }
 
-    <a href="{% url 'login' %}">Login</a>
+    overlay.addEventListener("click", closeAllPanels);
 
-    <a href="{% url 'register' %}">Register</a>
+    document.querySelectorAll("[data-close-panel]").forEach(function (btn) {
+        btn.addEventListener("click", closeAllPanels);
+    });
 
+    // --- Notifications panel ---
+    notifToggle.addEventListener("click", function () {
+        openPanel(notifPanel);
+
+        fetch("{% url 'notifications:panel' %}")
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                document.getElementById("notif-panel-body").innerHTML = data.html;
+                notifBadge.style.display = "none";
+            })
+            .catch(function () {
+                document.getElementById("notif-panel-body").innerHTML =
+                    '<p class="panel-empty">Couldn\'t load notifications.</p>';
+            });
+    });
+
+    // Live push updates the badge on every page (bell + both panels share this connection)
+    const notifProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+    const notifSocket = new WebSocket(notifProtocol + window.location.host + "/ws/notifications/");
+
+    notifSocket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.unread_count > 0) {
+            notifBadge.textContent = data.unread_count;
+            notifBadge.style.display = "flex";
+        } else {
+            notifBadge.style.display = "none";
+        }
+    };
+
+    // --- Messages panel ---
+    const msgList = document.getElementById("msg-panel-list");
+    const msgChat = document.getElementById("msg-panel-chat");
+    const msgBack = document.getElementById("msg-panel-back");
+    const msgTitle = document.getElementById("msg-panel-title");
+    const chatMessages = document.getElementById("panel-chat-messages");
+    const chatForm = document.getElementById("panel-chat-form");
+    const chatInput = document.getElementById("panel-chat-input");
+
+    let currentSocket = null;
+    let currentConversationId = null;
+
+    function showList() {
+        msgList.style.display = "block";
+        msgChat.style.display = "none";
+        msgBack.style.display = "none";
+        msgTitle.textContent = "Messages";
+
+        if (currentSocket) {
+            currentSocket.close();
+            currentSocket = null;
+        }
+    }
+
+    function openConversation(id, displayName) {
+        currentConversationId = id;
+        msgList.style.display = "none";
+        msgChat.style.display = "flex";
+        msgBack.style.display = "inline";
+        msgTitle.textContent = displayName;
+
+        fetch("/messages/panel/" + id + "/messages/")
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                chatMessages.innerHTML = data.html;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+
+        if (currentSocket) currentSocket.close();
+
+        const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        currentSocket = new WebSocket(protocol + window.location.host + "/ws/chat/" + id + "/");
+
+        currentSocket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+
+            const div = document.createElement("div");
+            div.className = "chat-message" + (data.sender === "{{ request.user.username }}" ? " mine" : "");
+
+            const author = document.createElement("span");
+            author.className = "chat-message-author";
+            author.textContent = data.sender;
+
+            const content = document.createElement("p");
+            content.className = "chat-message-content";
+            content.textContent = data.message;
+
+            const time = document.createElement("span");
+            time.className = "chat-message-time";
+            time.textContent = data.created;
+
+            div.appendChild(author);
+            div.appendChild(content);
+            div.appendChild(time);
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+    }
+
+    msgToggle.addEventListener("click", function () {
+        openPanel(msgPanel);
+        showList();
+
+        fetch("{% url 'messaging:panel' %}")
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                msgList.innerHTML = data.html;
+
+                msgList.querySelectorAll(".panel-conversation-item").forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        openConversation(btn.dataset.conversationId, btn.dataset.displayName);
+                    });
+                });
+            })
+            .catch(function () {
+                msgList.innerHTML = '<p class="panel-empty">Couldn\'t load conversations.</p>';
+            });
+    });
+
+    msgBack.addEventListener("click", showList);
+
+    chatForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text || !currentSocket) return;
+
+        currentSocket.send(JSON.stringify({ message: text }));
+        chatInput.value = "";
+    });
+})();
+</script>
 {% endif %}
-
-{% if user.is_staff %}
-    <a href="/admin/">Admin</a>
-{% endif %}
-
-
-</div>

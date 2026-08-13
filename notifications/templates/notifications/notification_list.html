@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="profile-list-page">
+
+    <h1>Notifications</h1>
+
+    {% if notifications %}
+
+        <div class="user-list">
+
+            {% for note in notifications %}
+
+                <div class="notification-item {% if not note.is_read %}unread{% endif %}">
+
+                    <div class="notification-icon {{ note.kind }}">
+                        {% if note.kind == "follow" %}👤{% elif note.kind == "like" %}♥{% else %}💬{% endif %}
+                    </div>
+
+                    <div class="notification-text">
+                        <a href="{% url 'public_profile' note.actor.username %}" class="notification-actor">
+                            {{ note.actor.username }}
+                        </a>
+
+                        {% if note.kind == "follow" %}
+                            started following you.
+                        {% elif note.kind == "like" %}
+                            liked your video
+                            {% if note.target %}
+                                “<a href="{{ note.target.get_absolute_url }}">{{ note.target.title }}</a>”
+                            {% endif %}
+                        {% elif note.kind == "comment" %}
+                            commented on
+                            {% if note.target %}
+                                “<a href="{{ note.target.get_absolute_url }}">{{ note.target.title }}</a>”
+                            {% endif %}
+
+                        {% elif note.kind == "message" %}
+                            sent you a message.
+                        
+                        {% if note.kind == "follow" %}👤{% elif note.kind == "like" %}
+                            ♥{% elif note.kind == "comment" %}
+                            💬{% else %}
+
+                            ✉️{% endif %}
+
+                        {% endif %}
+
+                        <span class="notification-time">{{ note.created|timesince }} ago</span>
+                    </div>
+
+                    <div class="profile-list-page">
+                        <h1>Notifications</h1>
+                        <div class="user-list">
+                            {% include "notifications/_notification_items.html" %}
+                        </div>
+                        {% include "pagination.html" %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="video-empty">
+            <h2>No notifications yet</h2>
+            <p>Follows, likes, and comments will show up here.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+<div class="profile-list-page">
+    <h1>Notifications</h1>
+    <div class="user-list">
+        {% include "notifications/_notification_items.html" %}
+    </div>
+</div>
+
+
+{% endblock %}

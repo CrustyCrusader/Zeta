@@ -9,6 +9,7 @@ from accounts.models import User
 from .models import Video, Like
 from comments.models import Comment
 from comments.forms import CommentForm
+from notifications.utils import notify
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import (
     CreateView,
@@ -19,6 +20,8 @@ from django.views.generic import (
 )
 
 from .forms import VideoForm
+
+
 
 
 @login_required
@@ -34,6 +37,7 @@ def toggle_like(request, id):
         liked = False
     else:
         liked = True
+        notify(recipient=video.author, actor=request.user, kind="like", target=video)
 
     return JsonResponse({
         "liked": liked,
@@ -82,7 +86,8 @@ class VideoListView(ListView):
     model = Video
     template_name = "Video/video_list.html"
     context_object_name = "videos"
-
+    paginate_by = 12
+    
     def get_queryset(self):
         queryset = Video.objects.select_related("author").order_by("-created")
 

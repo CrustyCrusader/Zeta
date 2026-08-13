@@ -10,7 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
+
+
 import os
+
+from decouple import config
+
+SECRET_KEY = config("SECRET_KEY")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,17 +26,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'fgg7&i3r+5*-185cvw$usgrmp&!(08l%hg*op4a8pj&6loa@!-'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "10.0.0.15",
+]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,8 +57,10 @@ INSTALLED_APPS = [
     'blog',
     'accounts',
     'profiles.apps.ProfilesConfig',
-    "comments",
-    
+    'comments',
+    'notifications',
+    "channels",
+    "messaging",
 ]
 
 MIDDLEWARE = [
@@ -73,12 +86,22 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "notifications.context_processors.unread_count",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'Artemis.wsgi.application'
+
+
+ASGI_APPLICATION = "Artemis.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
 
 
 # Database
@@ -136,3 +159,5 @@ MEDIA_ROOT = os.path.join (BASE_DIR , "media/")
 
 #User Model Auth
 AUTH_USER_MODEL = "accounts.User"
+LOGIN_REDIRECT_URL = "profile"
+LOGIN_URL = "login"

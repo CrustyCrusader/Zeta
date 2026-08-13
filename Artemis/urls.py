@@ -33,6 +33,8 @@ urlpatterns = [
     path("profile/", include("profiles.urls")),
     path("search/", user_search, name="user_search"),
     path('comments/', include('comments.urls')),
+    path('notifications/', include('notifications.urls')),
+    path('messages/', include('messaging.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

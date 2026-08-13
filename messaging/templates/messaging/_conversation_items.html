@@ -1,0 +1,17 @@
+{% for item in conversations %}
+    <button
+        type="button"
+        class="panel-conversation-item"
+        data-conversation-id="{{ item.conversation.id }}"
+        data-display-name="{{ item.display_name }}"
+    >
+        <div class="chat-list-name">{{ item.display_name }}</div>
+        {% if item.last_message %}
+            <div class="chat-list-preview">{{ item.last_message.sender.username }}: {{ item.last_message.content|truncatechars:50 }}</div>
+        {% else %}
+            <div class="chat-list-preview">No messages yet.</div>
+        {% endif %}
+    </button>
+{% empty %}
+    <p class="panel-empty">No conversations yet.</p>
+{% endfor %}

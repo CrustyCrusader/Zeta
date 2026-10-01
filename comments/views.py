@@ -40,7 +40,9 @@ def add_comment(request, content_type_id, object_id):
     )
 
     count = Comment.objects.filter(
-        content_type=content_type, object_id=obj.id
+        content_type=content_type,
+        object_id=obj.id,
+        is_hidden=False,
     ).count()
 
     return JsonResponse({"html": html, "count": count})
@@ -61,7 +63,9 @@ def delete_comment(request, comment_id):
     comment.delete()
 
     count = Comment.objects.filter(
-        content_type=content_type, object_id=object_id
+        content_type=content_type,
+        object_id=object_id,
+        is_hidden=False,
     ).count()
 
     return JsonResponse({"deleted": True, "count": count})

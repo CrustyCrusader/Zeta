@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import (
     UserPassesTestMixin,
 )
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import (
@@ -15,6 +16,7 @@ from django.views.generic import (
 
 from comments.forms import CommentForm
 from comments.models import Comment
+from bookmarks.utils import is_bookmarked_by
 
 from .forms import ArticleModelForm
 from .models import Article
@@ -33,7 +35,12 @@ class ArticleListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return Article.objects.all()
+        queryset = Article.objects.filter(active=True)
+        if self.request.user.is_authenticated:
+            queryset = Article.objects.filter(
+                Q(active=True) | Q(author=self.request.user)
+            )
+        return queryset
 
 
 class ArticleDetailView(DetailView):
@@ -41,10 +48,12 @@ class ArticleDetailView(DetailView):
 
     def get_object(self):
         id_ = self.kwargs.get("id")
-        return get_object_or_404(
-            Article,
-            id=self.kwargs.get("id"),
-        )
+        queryset = Article.objects.filter(active=True)
+        if self.request.user.is_authenticated:
+            queryset = Article.objects.filter(
+                Q(active=True) | Q(author=self.request.user)
+            )
+        return get_object_or_404(queryset, id=self.kwargs.get("id"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -58,11 +67,16 @@ class ArticleDetailView(DetailView):
             .filter(
                 content_type=content_type,
                 object_id=self.object.id,
+                is_hidden=False,
             )
             .select_related("author")
         )
 
         context["comment_form"] = CommentForm()
+        context["is_bookmarked"] = is_bookmarked_by(
+            self.request.user,
+            self.object,
+        )
 
         return context
 

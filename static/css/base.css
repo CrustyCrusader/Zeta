@@ -679,6 +679,194 @@ a {
     cursor: pointer;
 }
 
+.bookmark-toggle {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    gap: 8px;
+    margin: var(--sp-2) 0;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--paper);
+    font: 600 13px var(--font-display);
+    cursor: pointer;
+    transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+
+.bookmark-toggle > span {
+    color: var(--cyan);
+    font-size: 17px;
+}
+
+.bookmark-toggle:hover,
+.bookmark-toggle.is-saved {
+    border-color: var(--cyan);
+    color: var(--cyan);
+}
+
+.bookmark-toggle.is-saved {
+    background: rgba(77, 216, 224, 0.08);
+}
+
+.bookmark-toggle:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: var(--sp-2);
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto var(--sp-3);
+    border-bottom: 1px solid var(--line);
+}
+
+.profile-tabs a {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.profile-tabs a:hover,
+.profile-tabs a.active {
+    border-bottom-color: var(--signal);
+    color: var(--paper);
+}
+
+.saved-page .page-heading {
+    margin-bottom: var(--sp-3);
+}
+
+.saved-page .page-heading h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.saved-page .page-heading > p:last-child {
+    margin: 6px 0 0;
+    color: var(--muted);
+}
+
+.saved-list {
+    border-top: 1px solid var(--line);
+}
+
+.saved-item {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.saved-item-type {
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.saved-item-content {
+    min-width: 0;
+}
+
+.saved-item-content h2 {
+    margin: 0;
+    font-size: 17px;
+    overflow-wrap: anywhere;
+}
+
+.saved-item-content h2 a {
+    color: var(--paper);
+    text-decoration: none;
+}
+
+.saved-item-content h2 a:hover {
+    color: var(--signal);
+}
+
+.saved-item-content p {
+    margin: 3px 0;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.saved-item-content small {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+}
+
+.saved-item-open {
+    color: var(--cyan);
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.saved-empty {
+    border-top: 1px solid var(--line);
+}
+
+.report-content-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    margin: 4px 0;
+    padding: 6px 9px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.report-content-link:hover {
+    border-color: var(--signal);
+    color: var(--signal);
+}
+
+.report-target {
+    display: grid;
+    gap: 5px;
+    margin-bottom: var(--sp-3);
+    padding: var(--sp-3);
+    border-left: 2px solid var(--cyan);
+    background: var(--surface);
+}
+
+.report-target span,
+.report-notice {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.report-target strong {
+    color: var(--paper);
+    overflow-wrap: anywhere;
+}
+
+.report-notice,
+.moderation-notice {
+    padding: var(--sp-3);
+    border: 1px solid var(--signal);
+    border-radius: var(--radius-sm);
+    background: var(--signal-dim);
+    color: var(--paper);
+}
+
+.report-page .listing-form .market-delete-button {
+    background: var(--signal);
+    color: var(--ink);
+}
+
 @media (max-width: 760px) {
     .storefront,
     .market-detail,
@@ -3866,6 +4054,19 @@ footer {
 
     .user-card-action {
         font-size: 0;
+    }
+
+    .profile-tabs {
+        width: calc(100% - 28px);
+    }
+
+    .saved-item {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 4px 12px;
+    }
+
+    .saved-item-type {
+        grid-column: 1 / -1;
     }
 }
 

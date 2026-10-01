@@ -1,0 +1,8 @@
+{% if request.user.is_authenticated and request.user != owner %}
+    <a
+        class="report-content-link"
+        href="{% url 'reports:create' model_name object_id %}"
+    >
+        Report
+    </a>
+{% endif %}

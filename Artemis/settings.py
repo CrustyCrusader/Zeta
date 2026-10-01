@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'Video',
     'blog',
     'accounts',
+    'bookmarks',
+    'reports',
     'profiles.apps.ProfilesConfig',
     'comments',
     'notifications',

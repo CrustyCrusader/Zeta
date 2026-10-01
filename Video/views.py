@@ -9,6 +9,7 @@ from .models import Video, Like
 from comments.models import Comment
 from comments.forms import CommentForm
 from notifications.utils import notify
+from bookmarks.utils import is_bookmarked_by
 from django.contrib.contenttypes.models import ContentType
 from django.views.generic import (
     CreateView,
@@ -114,10 +115,17 @@ class VideoDetailView(DetailView):
                 user=self.request.user, video=self.object
             ).exists()
 
+        context["is_bookmarked"] = is_bookmarked_by(
+            self.request.user,
+            self.object,
+        )
+
         content_type = ContentType.objects.get_for_model(Video)
         context["content_type_id"] = content_type.id
         context["comments"] = Comment.objects.filter(
-            content_type=content_type, object_id=self.object.id
+            content_type=content_type,
+            object_id=self.object.id,
+            is_hidden=False,
         ).select_related("author")
         context["comment_form"] = CommentForm()
 

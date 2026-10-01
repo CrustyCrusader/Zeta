@@ -20,6 +20,7 @@ class Comment(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
 
     content = models.TextField(max_length=1000)
+    is_hidden = models.BooleanField(default=False)
 
     created = models.DateTimeField(auto_now_add=True)
 

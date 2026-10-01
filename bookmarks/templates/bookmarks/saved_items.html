@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Saved items | Zeta{% endblock %}
+
+{% block content %}
+<section class="profile-list-page saved-page">
+    <header class="page-heading">
+        <p class="home-eyebrow">YOUR COLLECTION</p>
+        <h1>Saved for later</h1>
+        <p>Videos, stories, and market finds you’ve bookmarked.</p>
+    </header>
+
+    {% if saved_items %}
+        <div class="saved-list">
+            {% for item in saved_items %}
+                <article class="saved-item">
+                    <div class="saved-item-type">{{ item.kind_label }}</div>
+                    <div class="saved-item-content">
+                        <h2><a href="{{ item.object.get_absolute_url }}">{{ item.object.title }}</a></h2>
+                        {% if item.kind == "video" %}
+                            <p>Video by {{ item.object.author.username }}</p>
+                        {% elif item.kind == "article" and item.object.author %}
+                            <p>Story by {{ item.object.author.username }}</p>
+                        {% elif item.kind == "product" and item.object.owner %}
+                            <p>Offered by {{ item.object.owner.username }} · ${{ item.object.price|floatformat:2 }}</p>
+                        {% elif item.kind == "product" %}
+                            <p>Market offer · ${{ item.object.price|floatformat:2 }}</p>
+                        {% endif %}
+                        <small>Saved {{ item.bookmark.created|date:"M j, Y" }}</small>
+                    </div>
+                    <a class="saved-item-open" href="{{ item.object.get_absolute_url }}" aria-label="Open {{ item.object.title }}">Open <span aria-hidden="true">→</span></a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="home-empty saved-empty">
+            <span aria-hidden="true">☆</span>
+            <h2>Your collection starts here.</h2>
+            <p>Save videos, stories, and market finds to keep them close.</p>
+            <a href="{% url 'Video:video_list' %}">Explore the community</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

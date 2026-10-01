@@ -20,6 +20,7 @@
 				{% if product.featured %}<span class="store-featured-label">Community pick</span>{% endif %}
 			</div>
 			<h1>{{ product.title }}</h1>
+			{% if product.is_hidden %}<p class="moderation-notice">This listing is hidden from the public market while it is reviewed.</p>{% endif %}
 			{% if product.owner %}
 				<p class="market-seller">Offered by <a href="{% url 'public_profile' product.owner.username %}">{{ product.owner.username }}</a></p>
 			{% else %}
@@ -29,6 +30,7 @@
 				<span>{% if product.kind == "service" %}Starting at{% else %}Price{% endif %}</span>
 				<strong>${{ product.price|floatformat:2 }}</strong>
 			</div>
+			{% include "bookmarks/_button.html" with model_name="product" object_id=product.id is_bookmarked=is_bookmarked %}
 			<div class="market-description">
 				<h2>About this offer</h2>
 				<p>{{ product.description|default:"The seller has not added a description yet."|linebreaksbr }}</p>
@@ -36,6 +38,7 @@
 			{% if product.owner %}
 				<a class="market-contact-link" href="{% url 'public_profile' product.owner.username %}">Visit seller profile</a>
 			{% endif %}
+			{% include "reports/_link.html" with model_name="product" object_id=product.id owner=product.owner %}
 			{% if product.owner == request.user %}
 				<div class="market-owner-actions">
 					<a href="{% url 'products:product-update' product.id %}">Edit listing</a>

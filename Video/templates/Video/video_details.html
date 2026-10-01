@@ -11,6 +11,7 @@
         Posted by <strong>{{ video.author.username }}</strong>
         on {{ video.created|date:"M d, Y" }}
     </p>
+    {% include "reports/_link.html" with model_name="video" object_id=video.id owner=video.author %}
 
     <div class="video-player-container">
         <video
@@ -40,6 +41,7 @@
 <p class="video-like-count" id="like-count">
     {{ video.likes.count }} like{{ video.likes.count|pluralize }}
 </p>
+{% include "bookmarks/_button.html" with model_name="video" object_id=video.id is_bookmarked=is_bookmarked %}
 
     {% if video.description %}
         <div class="video-description-box">

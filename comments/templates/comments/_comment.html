@@ -28,5 +28,6 @@
             Delete
         </button>
     {% endif %}
+    {% include "reports/_link.html" with model_name="comment" object_id=comment.id owner=comment.author %}
 
 </div>

@@ -1,0 +1,1 @@
+"""Saved-item bookmarks for community content."""

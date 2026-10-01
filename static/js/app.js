@@ -22,6 +22,13 @@ async function requestJson(url, options = {}) {
             headers.set("X-CSRFToken", csrfToken);
     }
     const response = await fetch(url, { ...options, headers });
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+        if (response.redirected) {
+            throw new Error("Your session has expired. Sign in and try again.");
+        }
+        throw new Error(`Unexpected server response (${response.status})`);
+    }
     let payload;
     try {
         payload = await response.json();
@@ -93,6 +100,36 @@ function initializeVideoLikes() {
         }
         catch (error) {
             showToast(error instanceof Error ? error.message : "Could not update like", "error");
+        }
+        finally {
+            button.disabled = false;
+            button.removeAttribute("aria-busy");
+        }
+    });
+}
+function initializeBookmarks() {
+    document.addEventListener("click", async (event) => {
+        if (!(event.target instanceof Element))
+            return;
+        const button = event.target.closest(".bookmark-toggle");
+        if (!button || !button.dataset.url || button.disabled)
+            return;
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+        try {
+            const data = await requestJson(button.dataset.url, {
+                method: "POST",
+            });
+            button.classList.toggle("is-saved", data.saved);
+            button.setAttribute("aria-pressed", String(data.saved));
+            const icon = document.createElement("span");
+            icon.setAttribute("aria-hidden", "true");
+            icon.textContent = data.saved ? "★" : "☆";
+            button.replaceChildren(icon, document.createTextNode(data.saved ? "Saved" : "Save"));
+            showToast(data.saved ? "Saved for later" : "Removed from saved", "success");
+        }
+        catch (error) {
+            showToast(error instanceof Error ? error.message : "Could not update saved item", "error");
         }
         finally {
             button.disabled = false;
@@ -455,6 +492,7 @@ function initializePanels() {
 }
 initializeNavigation();
 initializeVideoLikes();
+initializeBookmarks();
 initializeComments();
 initializeConversationDetail();
 initializePanels();

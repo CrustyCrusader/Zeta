@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Report content | Zeta{% endblock %}
+
+{% block content %}
+<section class="listing-editor report-page">
+    <a class="market-back-link" href="{{ target_url }}">← Back to content</a>
+    <header>
+        <p class="home-eyebrow">COMMUNITY CARE</p>
+        <h1>Report this content</h1>
+        <p>Reports are private and reviewed by the moderation team.</p>
+    </header>
+
+    {% if existing_report %}
+        <div class="report-notice" role="status">You’ve already reported this item. The moderation team has your report.</div>
+    {% else %}
+        <div class="report-target">
+            <span>About</span>
+            <strong>{% if target.title %}{{ target.title }}{% else %}{{ target.content|truncatechars:100 }}{% endif %}</strong>
+        </div>
+        <form method="post" class="site-form listing-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="site-form-field">
+                <label for="{{ form.reason.id_for_label }}">Why are you reporting this?</label>
+                {{ form.reason }}
+                {{ form.reason.errors }}
+            </div>
+            <div class="site-form-field">
+                <label for="{{ form.details.id_for_label }}">Additional details <span>(optional)</span></label>
+                {{ form.details }}
+                {{ form.details.errors }}
+            </div>
+            <div class="listing-form-actions">
+                <button type="submit" class="market-delete-button">Send report</button>
+                <a href="{{ target_url }}">Cancel</a>
+            </div>
+        </form>
+    {% endif %}
+</section>
+{% endblock %}

@@ -7,6 +7,10 @@ interface LikeResponse {
     count: number;
 }
 
+interface BookmarkResponse {
+    saved: boolean;
+}
+
 interface CommentResponse {
     html?: string;
     count?: number;
@@ -59,6 +63,14 @@ async function requestJson<T>(url: string, options: RequestInit = {}): Promise<T
     }
 
     const response = await fetch(url, { ...options, headers });
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+        if (response.redirected) {
+            throw new Error("Your session has expired. Sign in and try again.");
+        }
+        throw new Error(`Unexpected server response (${response.status})`);
+    }
+
     let payload: unknown;
 
     try {
@@ -138,6 +150,39 @@ function initializeVideoLikes(): void {
             showToast(data.liked ? "Added to your likes" : "Like removed", "success");
         } catch (error) {
             showToast(error instanceof Error ? error.message : "Could not update like", "error");
+        } finally {
+            button.disabled = false;
+            button.removeAttribute("aria-busy");
+        }
+    });
+}
+
+function initializeBookmarks(): void {
+    document.addEventListener("click", async (event) => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest<HTMLButtonElement>(".bookmark-toggle");
+        if (!button || !button.dataset.url || button.disabled) return;
+
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+
+        try {
+            const data = await requestJson<BookmarkResponse>(button.dataset.url, {
+                method: "POST",
+            });
+            button.classList.toggle("is-saved", data.saved);
+            button.setAttribute("aria-pressed", String(data.saved));
+
+            const icon = document.createElement("span");
+            icon.setAttribute("aria-hidden", "true");
+            icon.textContent = data.saved ? "★" : "☆";
+            button.replaceChildren(
+                icon,
+                document.createTextNode(data.saved ? "Saved" : "Save"),
+            );
+            showToast(data.saved ? "Saved for later" : "Removed from saved", "success");
+        } catch (error) {
+            showToast(error instanceof Error ? error.message : "Could not update saved item", "error");
         } finally {
             button.disabled = false;
             button.removeAttribute("aria-busy");
@@ -507,6 +552,7 @@ function initializePanels(): void {
 
 initializeNavigation();
 initializeVideoLikes();
+initializeBookmarks();
 initializeComments();
 initializeConversationDetail();
 initializePanels();

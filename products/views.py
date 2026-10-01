@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 
 from .forms import ProductForm
 from .models import Product
+from bookmarks.utils import is_bookmarked_by
 
 
 @login_required
@@ -46,7 +47,7 @@ def product_update_view(request, id):
 
 
 def product_list_view(request):
-    products = Product.objects.select_related("owner")
+    products = Product.objects.select_related("owner").filter(is_hidden=False)
     query = request.GET.get("q", "").strip()
     kind = request.GET.get("kind", "all")
     sort_by = request.GET.get("sort", "featured")
@@ -94,8 +95,20 @@ def product_list_view(request):
 
 
 def product_detail_view(request, id):
-    product = get_object_or_404(Product.objects.select_related("owner"), id=id)
-    return render(request, "products/product_detail.html", {"product": product})
+    products = Product.objects.select_related("owner")
+    if request.user.is_authenticated:
+        products = products.filter(Q(is_hidden=False) | Q(owner=request.user))
+    else:
+        products = products.filter(is_hidden=False)
+    product = get_object_or_404(products, id=id)
+    return render(
+        request,
+        "products/product_detail.html",
+        {
+            "product": product,
+            "is_bookmarked": is_bookmarked_by(request.user, product),
+        },
+    )
 
 
 @login_required

@@ -52,7 +52,7 @@ def home_view(request, *args, **kwargs):
     feed_items.sort(key=lambda item: item["created"], reverse=True)
     feed_items = feed_items[:30]
     featured_products = (
-        Product.objects.select_related("owner")
+        Product.objects.select_related("owner").filter(is_hidden=False)
         .order_by("-featured", "-id")[:3]
     )
 

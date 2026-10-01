@@ -18,9 +18,11 @@
             <span>{{ object.created|date:"M d, Y" }}</span>
         {% endif %}
     </div>
+    {% include "reports/_link.html" with model_name="article" object_id=object.id owner=object.author %}
 
 </div>
 
+{% include "bookmarks/_button.html" with model_name="article" object_id=object.id is_bookmarked=is_bookmarked %}
 
 <div class="article-content-box">
 

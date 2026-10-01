@@ -38,3 +38,6 @@ class SharedLayoutTests(TestCase):
 				response = self.client.get(reverse(page_name))
 				self.assertEqual(response.status_code, 200)
 				self.assertContains(response, "site-footer")
+
+			profile_response = self.client.get(reverse("profile"))
+			self.assertContains(profile_response, "Saved items")

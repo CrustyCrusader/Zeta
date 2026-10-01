@@ -60,9 +60,12 @@
 
 </div>
 
-<hr>
+<nav class="profile-tabs" aria-label="Your profile sections">
+    <a class="active" href="#profile-videos">My videos</a>
+    <a href="{% url 'bookmarks:saved' %}">Saved items</a>
+</nav>
 
-<h2>My Videos</h2>
+<h2 id="profile-videos">My Videos</h2>
 
 {% if videos %}
 

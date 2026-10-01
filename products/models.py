@@ -26,6 +26,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="products/", blank=True)
     featured = models.BooleanField(default=False)
+    is_hidden = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse("products:product-detail", kwargs={"id": self.id})

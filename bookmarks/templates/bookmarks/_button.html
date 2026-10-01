@@ -1,0 +1,13 @@
+{% if request.user.is_authenticated %}
+    <button
+        type="button"
+        class="bookmark-toggle{% if is_bookmarked %} is-saved{% endif %}"
+        data-url="{% url 'bookmarks:toggle' model_name object_id %}"
+        data-save-label="Save"
+        data-saved-label="Saved"
+        aria-pressed="{{ is_bookmarked|yesno:'true,false' }}"
+    >
+        <span aria-hidden="true">{% if is_bookmarked %}★{% else %}☆{% endif %}</span>
+        {% if is_bookmarked %}Saved{% else %}Save{% endif %}
+    </button>
+{% endif %}

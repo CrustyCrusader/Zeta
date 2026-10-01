@@ -21,6 +21,6 @@ websocket_urlpatterns = (
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": AuthMiddlewareStack(
-        URLRouter(messaging.routing.websocket_urlpatterns)
+        URLRouter(websocket_urlpatterns)
     ),
 })

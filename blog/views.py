@@ -30,16 +30,10 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 
 class ArticleListView(ListView):
     template_name = "articles/article_list.html"
+    paginate_by = 12
 
     def get_queryset(self):
-        articles = Article.objects.all()
-        paginate_by = 12
-        
-        print("BLOG ARTICLES:", list(
-            articles.values_list("id", "title")
-        ))
-
-        return articles
+        return Article.objects.all()
 
 
 class ArticleDetailView(DetailView):

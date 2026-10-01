@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db import models
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -20,6 +19,7 @@ from django.views.generic import (
 )
 
 from .forms import VideoForm
+from .utils import visible_videos_for
 
 
 
@@ -53,7 +53,10 @@ def liked_videos(request, username):
     if not is_owner and not profile_user.profile.likes_public:
         raise Http404("This user's likes are private.")
 
-    likes = Like.objects.filter(user=profile_user).select_related("video")
+    likes = Like.objects.filter(
+        user=profile_user,
+        video__in=visible_videos_for(request.user),
+    ).select_related("video", "video__author")
 
     return render(
         request,
@@ -89,17 +92,7 @@ class VideoListView(ListView):
     paginate_by = 12
     
     def get_queryset(self):
-        queryset = Video.objects.select_related("author").order_by("-created")
-
-        if self.request.user.is_authenticated:
-            return queryset.filter(
-                models.Q(visibility=Video.Visibility.PUBLIC)
-                | models.Q(author=self.request.user)
-            )
-
-        return queryset.filter(
-            visibility=Video.Visibility.PUBLIC
-        )
+        return visible_videos_for(self.request.user).order_by("-created")
 
 
 class VideoDetailView(DetailView):
@@ -108,7 +101,10 @@ class VideoDetailView(DetailView):
     context_object_name = "video"
 
     def get_object(self):
-        return get_object_or_404(Video, id=self.kwargs.get("id"))
+        return get_object_or_404(
+            visible_videos_for(self.request.user),
+            id=self.kwargs.get("id"),
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

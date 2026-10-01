@@ -3,6 +3,7 @@ from django.shortcuts import render
 from accounts.models import User
 from accounts.models import Follow
 from Video.models import Video
+from Video.utils import visible_videos_for
 from blog.models import Article
 from itertools import chain
 
@@ -20,9 +21,8 @@ def home_view(request, *args, **kwargs):
             follower=request.user
         ).values_list("following_id", flat=True)
 
-        videos = Video.objects.filter(
-            author_id__in=following_ids,
-            visibility=Video.Visibility.PUBLIC,
+        videos = visible_videos_for(request.user).filter(
+            author_id__in=following_ids
         )
         articles = Article.objects.filter(
             author_id__in=following_ids,
@@ -31,7 +31,9 @@ def home_view(request, *args, **kwargs):
     else:
         # Not logged in, or logged in but following nobody yet —
         # fall back to public activity site-wide.
-        videos = Video.objects.filter(visibility=Video.Visibility.PUBLIC)
+        videos = visible_videos_for(request.user).filter(
+            visibility=Video.Visibility.PUBLIC
+        )
         articles = Article.objects.filter(active=True)
 
     videos = videos.select_related("author").order_by("-created")[:30]

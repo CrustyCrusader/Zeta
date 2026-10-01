@@ -72,32 +72,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         return message
     
+
+
+
     
+
+
+
     
-class NotificationConsumer(AsyncWebsocketConsumer):
-
-    async def connect(self):
-        user = self.scope["user"]
-
-        if not user.is_authenticated:
-            await self.close()
-            return
-
-        # Each user gets their own private group — only their own
-        # notifications ever get pushed into it.
-        self.group_name = f"notifications_{user.id}"
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        if hasattr(self, "group_name"):
-            await self.channel_layer.group_discard(self.group_name, self.channel_name)
-
-    async def notify(self, event):
-        # Called when something elsewhere in the app pushes to this
-        # user's group — just forwards the payload to the browser.
-        await self.send(text_data=json.dumps({
-            "unread_count": event["unread_count"],
-            "kind": event["kind"],
-            "actor": event["actor"],
-        }))

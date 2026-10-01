@@ -5,6 +5,7 @@ from accounts.models import Follow, User
 from notifications.utils import notify
 
 from messaging.utils import is_mutual_follow
+from Video.utils import visible_videos_for
 
 from .forms import ProfileForm
 from .models import Profile
@@ -16,7 +17,9 @@ def profile_detail(request):
         user=request.user
     )
 
-    videos = request.user.videos.all().order_by("-created")
+    videos = visible_videos_for(request.user).filter(
+        author=request.user
+    ).order_by("-created")
     
     articles = request.user.articles.filter(active=True).order_by("-created")
     
@@ -73,7 +76,9 @@ def public_profile(request, username):
         user=user
     )
 
-    videos = user.videos.all().order_by("-created")
+    videos = visible_videos_for(request.user).filter(
+        author=user
+    ).order_by("-created")
     
     articles = user.articles.filter(active=True).order_by("-created")
 

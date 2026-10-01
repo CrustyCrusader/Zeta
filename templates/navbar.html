@@ -1,4 +1,11 @@
-<nav class="navbar">
+<nav class="navbar"
+    {% if user.is_authenticated %}
+        data-notifications-url="{% url 'notifications:panel' %}"
+        data-conversations-url="{% url 'messaging:panel' %}"
+        data-panel-messages-url="{% url 'messaging:panel_messages' 0 %}"
+        data-current-username="{{ request.user.username }}"
+    {% endif %}
+>
 
     <button
         type="button"
@@ -45,21 +52,21 @@
     {% if user.is_authenticated %}
         <div class="navbar-icons">
 
-            <button type="button" class="nav-bell" id="notif-toggle" aria-label="Notifications">
+            <button type="button" class="nav-bell" id="notif-toggle" aria-label="Notifications" aria-expanded="false" aria-controls="notif-panel">
                 🔔
                 <span class="nav-bell-badge" id="notif-badge" style="{% if unread_notification_count == 0 %}display:none;{% endif %}">
                     {{ unread_notification_count }}
                 </span>
             </button>
 
-            <button type="button" class="nav-bell" id="msg-toggle" aria-label="Messages">
+            <button type="button" class="nav-bell" id="msg-toggle" aria-label="Messages" aria-expanded="false" aria-controls="msg-panel">
                 ✉️
             </button>
 
         </div>
 
         <!-- Notifications panel -->
-        <div class="side-panel" id="notif-panel">
+        <div class="side-panel" id="notif-panel" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Notifications">
             <div class="side-panel-header">
                 <h3>Notifications</h3>
                 <button type="button" class="side-panel-close" data-close-panel="notif-panel">✕</button>
@@ -70,7 +77,7 @@
         </div>
 
         <!-- Messages panel -->
-        <div class="side-panel" id="msg-panel">
+        <div class="side-panel" id="msg-panel" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Messages">
             <div class="side-panel-header">
                 <button type="button" class="side-panel-back" id="msg-panel-back" style="display:none;">← Back</button>
                 <h3 id="msg-panel-title">Messages</h3>
@@ -83,6 +90,7 @@
 
             <div class="side-panel-chat" id="msg-panel-chat" style="display:none;">
                 <div class="chat-messages" id="panel-chat-messages"></div>
+                <p class="chat-status" id="panel-chat-status" role="status" aria-live="polite">Choose a conversation</p>
                 <form id="panel-chat-form" class="chat-form">
                     <input type="text" id="panel-chat-input" placeholder="Type a message..." autocomplete="off">
                     <button type="submit" class="btn btn-primary">Send</button>
@@ -95,191 +103,3 @@
     {% endif %}
 
 </nav>
-
-<script>
-(function () {
-    const toggle = document.getElementById("navbar-toggle");
-    const menu = document.getElementById("navbar-menu");
-    if (!toggle || !menu) return;
-
-    toggle.addEventListener("click", function () {
-        const isOpen = menu.classList.toggle("open");
-        toggle.classList.toggle("active", isOpen);
-        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    });
-
-    menu.querySelectorAll("a, button").forEach(function (el) {
-        el.addEventListener("click", function () {
-            menu.classList.remove("open");
-            toggle.classList.remove("active");
-            toggle.setAttribute("aria-expanded", "false");
-        });
-    });
-})();
-</script>
-
-{% if user.is_authenticated %}
-<script>
-(function () {
-    function getCookie(name) {
-        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-        return match ? match[2] : null;
-    }
-
-    const overlay = document.getElementById("panel-overlay");
-    const notifPanel = document.getElementById("notif-panel");
-    const msgPanel = document.getElementById("msg-panel");
-    const notifToggle = document.getElementById("notif-toggle");
-    const msgToggle = document.getElementById("msg-toggle");
-    const notifBadge = document.getElementById("notif-badge");
-
-    function closeAllPanels() {
-        notifPanel.classList.remove("open");
-        msgPanel.classList.remove("open");
-        overlay.classList.remove("visible");
-    }
-
-    function openPanel(panel) {
-        closeAllPanels();
-        panel.classList.add("open");
-        overlay.classList.add("visible");
-    }
-
-    overlay.addEventListener("click", closeAllPanels);
-
-    document.querySelectorAll("[data-close-panel]").forEach(function (btn) {
-        btn.addEventListener("click", closeAllPanels);
-    });
-
-    // --- Notifications panel ---
-    notifToggle.addEventListener("click", function () {
-        openPanel(notifPanel);
-
-        fetch("{% url 'notifications:panel' %}")
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                document.getElementById("notif-panel-body").innerHTML = data.html;
-                notifBadge.style.display = "none";
-            })
-            .catch(function () {
-                document.getElementById("notif-panel-body").innerHTML =
-                    '<p class="panel-empty">Couldn\'t load notifications.</p>';
-            });
-    });
-
-    // Live push updates the badge on every page (bell + both panels share this connection)
-    const notifProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-    const notifSocket = new WebSocket(notifProtocol + window.location.host + "/ws/notifications/");
-
-    notifSocket.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        if (data.unread_count > 0) {
-            notifBadge.textContent = data.unread_count;
-            notifBadge.style.display = "flex";
-        } else {
-            notifBadge.style.display = "none";
-        }
-    };
-
-    // --- Messages panel ---
-    const msgList = document.getElementById("msg-panel-list");
-    const msgChat = document.getElementById("msg-panel-chat");
-    const msgBack = document.getElementById("msg-panel-back");
-    const msgTitle = document.getElementById("msg-panel-title");
-    const chatMessages = document.getElementById("panel-chat-messages");
-    const chatForm = document.getElementById("panel-chat-form");
-    const chatInput = document.getElementById("panel-chat-input");
-
-    let currentSocket = null;
-    let currentConversationId = null;
-
-    function showList() {
-        msgList.style.display = "block";
-        msgChat.style.display = "none";
-        msgBack.style.display = "none";
-        msgTitle.textContent = "Messages";
-
-        if (currentSocket) {
-            currentSocket.close();
-            currentSocket = null;
-        }
-    }
-
-    function openConversation(id, displayName) {
-        currentConversationId = id;
-        msgList.style.display = "none";
-        msgChat.style.display = "flex";
-        msgBack.style.display = "inline";
-        msgTitle.textContent = displayName;
-
-        fetch("/messages/panel/" + id + "/messages/")
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                chatMessages.innerHTML = data.html;
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            });
-
-        if (currentSocket) currentSocket.close();
-
-        const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-        currentSocket = new WebSocket(protocol + window.location.host + "/ws/chat/" + id + "/");
-
-        currentSocket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-
-            const div = document.createElement("div");
-            div.className = "chat-message" + (data.sender === "{{ request.user.username }}" ? " mine" : "");
-
-            const author = document.createElement("span");
-            author.className = "chat-message-author";
-            author.textContent = data.sender;
-
-            const content = document.createElement("p");
-            content.className = "chat-message-content";
-            content.textContent = data.message;
-
-            const time = document.createElement("span");
-            time.className = "chat-message-time";
-            time.textContent = data.created;
-
-            div.appendChild(author);
-            div.appendChild(content);
-            div.appendChild(time);
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        };
-    }
-
-    msgToggle.addEventListener("click", function () {
-        openPanel(msgPanel);
-        showList();
-
-        fetch("{% url 'messaging:panel' %}")
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                msgList.innerHTML = data.html;
-
-                msgList.querySelectorAll(".panel-conversation-item").forEach(function (btn) {
-                    btn.addEventListener("click", function () {
-                        openConversation(btn.dataset.conversationId, btn.dataset.displayName);
-                    });
-                });
-            })
-            .catch(function () {
-                msgList.innerHTML = '<p class="panel-empty">Couldn\'t load conversations.</p>';
-            });
-    });
-
-    msgBack.addEventListener("click", showList);
-
-    chatForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const text = chatInput.value.trim();
-        if (!text || !currentSocket) return;
-
-        currentSocket.send(JSON.stringify({ message: text }));
-        chatInput.value = "";
-    });
-})();
-</script>
-{% endif %}

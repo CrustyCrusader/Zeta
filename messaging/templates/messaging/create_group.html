@@ -2,13 +2,16 @@
 
 {% block content %}
 
-<div class="chat-list-page">
-
-    <h1>New Group</h1>
+<section class="listing-editor chat-group-page">
+    <a class="market-back-link" href="{% url 'messaging:conversation_list' %}">← Back to messages</a>
+    <header>
+        <p class="home-eyebrow">MESSAGING</p>
+        <h1>Bring people together.</h1>
+        <p>Create a group chat with people you mutually follow.</p>
+    </header>
 
     {% if form.participants.field.queryset.exists %}
-
-        <form method="post" class="chat-group-form">
+        <form method="post" class="chat-group-form site-form listing-form">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Create Group</button>
@@ -23,6 +26,6 @@
 
     {% endif %}
 
-</div>
+</section>
 
 {% endblock %}

@@ -1,27 +1,30 @@
 {% extends 'base.html' %}
 
+{% block title %}Join Zeta{% endblock %}
+
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-</head>
-<body>
-
-<h1>Create Account</h1>
-
-<form method="post">
-    {% csrf_token %}
-
-    {{ form.as_p }}
-
-    <button type="submit">Register</button>
-</form>
-
-<p>
-    Already have an account?
-    <a href="{% url 'login' %}">Log in</a>
-</p>
-    <footer>
-
-    </footer>
+<section class="auth-page">
+    <div class="auth-intro">
+        <p class="home-eyebrow">MAKE YOURSELF AT HOME</p>
+        <h1>Find your corner of Zeta.</h1>
+        <p>Meet makers, share what you’re working on, and discover something new.</p>
+    </div>
+    <div class="auth-panel">
+        <h2>Create your account</h2>
+        <form method="post" class="site-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                <div class="site-form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {{ field.errors }}
+                    {% if field.help_text %}<small>{{ field.help_text|safe }}</small>{% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Create account</button>
+        </form>
+        <p class="auth-switch">Already a member? <a href="{% url 'login' %}">Sign in</a></p>
+    </div>
+</section>
 {% endblock %} 

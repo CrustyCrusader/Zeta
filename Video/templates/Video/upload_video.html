@@ -1,42 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="container py-4">
-
-
-<h1 class="mb-4">
-    {% if object %}
-        Edit Video
-    {% else %}
-        Upload Video
-    {% endif %}
-</h1>
-
-<form method="post" enctype="multipart/form-data">
-
-    {% csrf_token %}
-
-    {{ form.as_p }}
-
-    <button type="submit" class="btn btn-primary">
-        {% if object %}
-            Save Changes
-        {% else %}
-            Upload Video
-        {% endif %}
-    </button>
-
-    <a
-        href="{% url 'Video:video_list' %}"
-        class="btn btn-secondary"
-    >
-        Cancel
-    </a>
-
-</form>
-
-
-</div>
-
+<section class="listing-editor">
+    <a class="market-back-link" href="{% url 'Video:video_list' %}">← Back to videos</a>
+    <header>
+        <p class="home-eyebrow">VIDEO LIBRARY</p>
+        <h1>{% if object %}Edit your video{% else %}Share a video{% endif %}</h1>
+        <p>Bring the community along for whatever you’re making, learning, or exploring.</p>
+    </header>
+    <form method="post" enctype="multipart/form-data" class="site-form listing-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="site-form-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <div class="listing-form-actions">
+            <button type="submit" class="btn btn-primary">{% if object %}Save changes{% else %}Publish video{% endif %}</button>
+            <a href="{% url 'Video:video_list' %}">Cancel</a>
+        </div>
+    </form>
+</section>
 {% endblock %}

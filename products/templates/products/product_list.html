@@ -1,12 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<section class="storefront">
+     <header class="storefront-heading">
+          <div>
+               <p class="store-kicker">THE ZETA MARKET</p>
+               <h1>Good work, made visible.</h1>
+               <p class="store-intro">Discover independent products and services from the community.</p>
+          </div>
+          {% if user.is_authenticated %}
+               <a class="store-create-link" href="{% url 'products:product-create' %}">＋ List an offering</a>
+          {% else %}
+               <a class="store-create-link" href="{% url 'login' %}?next={% url 'products:product-create' %}">＋ Become a seller</a>
+          {% endif %}
+     </header>
 
+     <form class="store-controls" method="get" action="{% url 'products:product-list' %}">
+          <label class="store-search-label" for="store-search">Search offerings</label>
+          <input id="store-search" type="search" name="q" value="{{ search_query }}" placeholder="Name, maker, or service">
+          <label class="store-select-label" for="store-kind">Type</label>
+          <select id="store-kind" name="kind">
+               <option value="all" {% if active_kind == "all" %}selected{% endif %}>All offerings</option>
+               <option value="product" {% if active_kind == "product" %}selected{% endif %}>Products</option>
+               <option value="service" {% if active_kind == "service" %}selected{% endif %}>Services</option>
+          </select>
+          <label class="store-select-label" for="store-sort">Sort</label>
+          <select id="store-sort" name="sort">
+               <option value="featured" {% if sort_by == "featured" %}selected{% endif %}>Featured</option>
+               <option value="price-low" {% if sort_by == "price-low" %}selected{% endif %}>Price: low to high</option>
+               <option value="price-high" {% if sort_by == "price-high" %}selected{% endif %}>Price: high to low</option>
+               <option value="title" {% if sort_by == "title" %}selected{% endif %}>Name</option>
+          </select>
+          <button class="store-search-button" type="submit">Find</button>
+     </form>
 
+     <section class="store-results" aria-labelledby="store-results-title">
+          <div class="store-results-heading">
+               <h2 id="store-results-title">Community offers</h2>
+               <span>{{ listing_count }} offer{{ listing_count|pluralize }}</span>
+          </div>
 
-{% for instance in object_list %}
-     <p>{{ instance.id }} - <a href='{{instance.get_absolute_url }}'>{{ instance.title }}</a></p>
-{% endfor %}
+          {% if products %}
+               <div class="store-grid">
+                    {% for listing in products %}
+                         <article class="store-card">
+                              <a class="store-card-media" href="{{ listing.get_absolute_url }}" aria-label="View {{ listing.title }}">
+                                   {% if listing.image %}
+                                        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" loading="lazy">
+                                   {% else %}
+                                        <span class="store-placeholder store-placeholder--{{ listing.kind }}" aria-hidden="true">
+                                             <span>{{ listing.get_kind_display }}</span>
+                                             <strong>{{ listing.title|first|upper }}</strong>
+                                        </span>
+                                   {% endif %}
+                                   {% if listing.featured %}<span class="store-featured">Featured</span>{% endif %}
+                              </a>
+                              <div class="store-card-content">
+                                   <div class="store-card-meta">
+                                        <span class="store-kind">{{ listing.get_kind_display }}</span>
+                                        {% if listing.owner %}
+                                             <a class="store-maker" href="{% url 'public_profile' listing.owner.username %}">{{ listing.owner.username }}</a>
+                                        {% else %}
+                                             <span class="store-maker">Zeta member</span>
+                                        {% endif %}
+                                   </div>
+                                   <h3><a href="{{ listing.get_absolute_url }}">{{ listing.title }}</a></h3>
+                                   <p class="store-card-description">{{ listing.description|default:"A new offering from the Zeta community."|truncatechars:118 }}</p>
+                                   <div class="store-card-footer">
+                                        <span class="store-price-label">{% if listing.kind == "service" %}Starting at{% else %}Price{% endif %}</span>
+                                        <strong>${{ listing.price|floatformat:2 }}</strong>
+                                   </div>
+                              </div>
+                         </article>
+                    {% endfor %}
+               </div>
 
-
+               {% if page_obj.paginator.num_pages > 1 %}
+                    <nav class="store-pagination" aria-label="Store pages">
+                         {% if page_obj.has_previous %}
+                              <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                         {% endif %}
+                         <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                         {% if page_obj.has_next %}
+                              <a href="?{% if query_string %}{{ query_string }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                         {% endif %}
+                    </nav>
+               {% endif %}
+          {% else %}
+               <div class="store-empty">
+                    <span class="store-empty-mark" aria-hidden="true">＋</span>
+                    <h3>{% if search_query or active_kind != "all" %}No matching offers{% else %}The first listing is yours{% endif %}</h3>
+                    <p>{% if search_query or active_kind != "all" %}Try a different search or type.{% else %}Share a product or service with the Zeta community.{% endif %}</p>
+                    {% if user.is_authenticated and not search_query and active_kind == "all" %}
+                         <a class="store-create-link" href="{% url 'products:product-create' %}">Create a listing</a>
+                    {% endif %}
+               </div>
+          {% endif %}
+     </section>
+</section>
 {% endblock %}

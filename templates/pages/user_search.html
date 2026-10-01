@@ -1,83 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>User Search</h1>
-
-{% if query %} <p>
-Results for "<strong>{{ query }}</strong>" </p>
-{% endif %}
-
-{% if users %}
-
-
-<div class="user-list">
-
-    {% for profile_user in users %}
-
-        <div class="user-card">
-
-            <a href="{% url 'public_profile' profile_user.username %}">
-                {% if profile_user.profile.avatar %}
-                    <img
-                        src="{{ profile_user.profile.avatar.url }}"
-                        alt="{{ profile_user.username }}"
-                        class="user-avatar"
-                    >
-                {% else %}
-                    <div class="user-avatar-placeholder">
-                        {{ profile_user.username|first|upper }}
-                    </div>
-                {% endif %}
-            </a>
-
-            <div class="user-info">
-
-                <h3>
-                    <a
-                        href="{% url 'public_profile' profile_user.username %}"
-                    >
-                        {{ profile_user.username }}
+<section class="profile-list-page search-results-page">
+    <header class="page-heading">
+        <p class="home-eyebrow">PEOPLE OF ZETA</p>
+        <h1>Find your people</h1>
+        {% if query %}<p>Showing matches for <strong>“{{ query }}”</strong></p>{% endif %}
+    </header>
+    {% if users %}
+        <div class="user-list">
+            {% for profile_user in users %}
+                <article class="user-card">
+                    <a class="user-card-avatar" href="{% url 'public_profile' profile_user.username %}">
+                        {% if profile_user.profile.avatar %}
+                            <img src="{{ profile_user.profile.avatar.url }}" alt="{{ profile_user.username }}">
+                        {% else %}
+                            <span class="user-avatar-placeholder">{{ profile_user.username|first|upper }}</span>
+                        {% endif %}
                     </a>
-                </h3>
-
-                {% if profile_user.profile.bio %}
-                    <p>
-                        {{ profile_user.profile.bio|truncatewords:15 }}
-                    </p>
-                {% endif %}
-
-            </div>
-
+                    <div class="user-info">
+                        <h2><a href="{% url 'public_profile' profile_user.username %}">{{ profile_user.username }}</a></h2>
+                        {% if profile_user.profile.bio %}<p>{{ profile_user.profile.bio|truncatewords:20 }}</p>{% else %}<p>Making a home on Zeta.</p>{% endif %}
+                    </div>
+                    <a class="user-card-action" href="{% url 'public_profile' profile_user.username %}">View profile <span aria-hidden="true">→</span></a>
+                </article>
+            {% endfor %}
         </div>
-
-    {% endfor %}
-
-</div>
-
-
-{% elif query %}
-
-
-<div class="text-center py-5">
-    <h3>No users found.</h3>
-    <p>
-        No users matched "{{ query }}".
-    </p>
-</div>
-
-
-{% else %}
-
-
-<div class="text-center py-5">
-    <h3>Search for a user</h3>
-    <p>
-        Enter a username above to find profiles.
-    </p>
-</div>
-
-
-{% endif %}
-
+    {% elif query %}
+        <div class="home-empty"><span aria-hidden="true">⌕</span><h2>No matches this time</h2><p>Try another name or come back to explore later.</p></div>
+    {% else %}
+        <div class="home-empty"><span aria-hidden="true">⌕</span><h2>Who are you looking for?</h2><p>Search by username using the field above.</p></div>
+    {% endif %}
+</section>
 {% endblock %}

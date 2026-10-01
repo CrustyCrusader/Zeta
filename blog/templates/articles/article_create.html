@@ -1,11 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-
-<form action='.' method='POST'>{% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Save' />
-</form>
-
+<section class="listing-editor">
+    <a class="market-back-link" href="{% url 'articles:article-list' %}">← Back to stories</a>
+    <header>
+        <p class="home-eyebrow">COMMUNITY STORIES</p>
+        <h1>Put your thoughts into words.</h1>
+        <p>Give your story a clear title and a little room to unfold.</p>
+    </header>
+    <form action="." method="post" class="site-form listing-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="site-form-field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Publish story</button>
+    </form>
+</section>
 {% endblock %}

@@ -1,6 +1,11 @@
 {
   "name": "Zeta Django",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.14-bookworm",
-  "postCreateCommand": "python -m pip install -r requirements.txt",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    }
+  },
+  "postCreateCommand": "python -m pip install -r requirements.txt && npm ci && npm run build",
   "forwardPorts": [8000]
 }

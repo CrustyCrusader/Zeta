@@ -1,9 +1,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="POST"> 
-  {% csrf_token %}
-  {{ form.as_p }}
-<input type="submit" value="Save" />
-</form>
+<main class="listing-editor">
+  <a class="market-back-link" href="{% if product %}{{ product.get_absolute_url }}{% else %}{% url 'products:product-list' %}{% endif %}">← Back</a>
+  <header>
+    <p class="store-kicker">SELL ON ZETA</p>
+    <h1>{% if editing %}Edit your listing{% else %}Create an offering{% endif %}</h1>
+    <p>Give people the details they need to understand what you make or do.</p>
+  </header>
+
+  <form class="listing-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="listing-field">
+      <label for="{{ form.title.id_for_label }}">Name</label>
+      {{ form.title }}
+      {{ form.title.errors }}
+    </div>
+    <div class="listing-field listing-field--split">
+      <div>
+        <label for="{{ form.kind.id_for_label }}">Offering type</label>
+        {{ form.kind }}
+        {{ form.kind.errors }}
+      </div>
+      <div>
+        <label for="{{ form.price.id_for_label }}">{% if form.instance.kind == "service" %}Starting price{% else %}Price{% endif %}</label>
+        <div class="listing-price-input"><span>$</span>{{ form.price }}</div>
+        {{ form.price.errors }}
+      </div>
+    </div>
+    <div class="listing-field">
+      <label for="{{ form.description.id_for_label }}">Description</label>
+      {{ form.description }}
+      {{ form.description.errors }}
+    </div>
+    <div class="listing-field">
+      <label for="{{ form.image.id_for_label }}">Cover image</label>
+      {{ form.image }}
+      <span class="listing-help">A clear photo helps your offer stand out.</span>
+      {{ form.image.errors }}
+    </div>
+    <label class="listing-featured" for="{{ form.featured.id_for_label }}">
+      {{ form.featured }}
+      <span><strong>Feature this listing</strong><small>Give it priority placement in the market.</small></span>
+    </label>
+    {{ form.featured.errors }}
+    <div class="listing-form-actions">
+      <button type="submit" class="store-create-link">{% if editing %}Save changes{% else %}Publish listing{% endif %}</button>
+      <a href="{% if product %}{{ product.get_absolute_url }}{% else %}{% url 'products:product-list' %}{% endif %}">Cancel</a>
+    </div>
+  </form>
+</main>
 {% endblock %}

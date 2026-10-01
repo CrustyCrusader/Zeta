@@ -5,20 +5,23 @@ from .models import Product
 
 class ProductForm(forms.ModelForm):
     title = forms.CharField(
-        label="",
-        widget=forms.TextInput(attrs={"placeholder": "Your title"}),
+        max_length=120,
+        widget=forms.TextInput(attrs={"placeholder": "A clear name for your offer"}),
     )
     description = forms.CharField(
         required=False,
         widget=forms.Textarea(
             attrs={
-                "placeholder": "Your description",
-                "rows": 10,
+                "placeholder": "What makes it useful? Include details buyers need to know.",
+                "rows": 7,
             }
         ),
     )
-    price = forms.DecimalField(initial=199.99)
+    price = forms.DecimalField(
+        min_value=0,
+        widget=forms.NumberInput(attrs={"min": "0", "step": "0.01"}),
+    )
 
     class Meta:
         model = Product
-        fields = ["title", "description", "price"]
+        fields = ["title", "kind", "description", "price", "image", "featured"]

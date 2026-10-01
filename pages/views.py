@@ -6,6 +6,7 @@ from Video.models import Video
 from Video.utils import visible_videos_for
 from blog.models import Article
 from itertools import chain
+from products.models import Product
 
 
 def home_view(request, *args, **kwargs):
@@ -50,6 +51,10 @@ def home_view(request, *args, **kwargs):
 
     feed_items.sort(key=lambda item: item["created"], reverse=True)
     feed_items = feed_items[:30]
+    featured_products = (
+        Product.objects.select_related("owner")
+        .order_by("-featured", "-id")[:3]
+    )
 
     return render(
         request,
@@ -57,6 +62,7 @@ def home_view(request, *args, **kwargs):
         {
             "feed_items": feed_items,
             "is_following_anyone": is_following_anyone,
+            "featured_products": featured_products,
         },
     )
 

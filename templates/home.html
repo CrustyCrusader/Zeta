@@ -1,76 +1,127 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<div class="feed">
-
-    <div class="feed-heading">
-        <h1>Home</h1>
-
-        {% if request.user.is_authenticated and not is_following_anyone %}
-            <p class="feed-hint">
-                Follow people to personalize your feed — showing public activity for now.
-            </p>
-        {% endif %}
-    </div>
-
-    {% if feed_items %}
-
-        {% for item in feed_items %}
-
-            {% if item.kind == "video" %}
-
-                <a href="{% url 'Video:video_details' item.obj.id %}" class="feed-item">
-                    <div class="feed-item-header">
-                        <span class="feed-badge video">Video</span>
-                        <span class="feed-author">{{ item.obj.author.username }}</span>
-                        <span class="feed-time">{{ item.obj.created|date:"M d, Y" }}</span>
-                    </div>
-
-                    <h2 class="feed-item-title">{{ item.obj.title }}</h2>
-
-                    {% if item.obj.thumbnail %}
-                        <div class="feed-thumbnail">
-                            <img src="{{ item.obj.thumbnail.url }}" alt="{{ item.obj.title }}">
-                        </div>
-                    {% endif %}
-                </a>
-
-            {% elif item.kind == "article" %}
-
-                <a href="{{ item.obj.get_absolute_url }}" class="feed-item">
-                    <div class="feed-item-header">
-                        <span class="feed-badge article">Article</span>
-                        <span class="feed-author">{{ item.obj.author.username }}</span>
-                        <span class="feed-time">{{ item.obj.created|date:"M d, Y" }}</span>
-                    </div>
-
-                    <h2 class="feed-item-title">{{ item.obj.title }}</h2>
-
-                    <p class="feed-item-excerpt">
-                        {{ item.obj.content|truncatewords:35 }}
-                    </p>
-                </a>
-
-            {% endif %}
-
-        {% endfor %}
-
-    {% else %}
-
-        <div class="feed-empty">
-            <h2>Nothing here yet</h2>
-            <p>
-                {% if request.user.is_authenticated %}
-                    Follow people or check back once there's activity to show.
-                {% else %}
-                    <a href="{% url 'login' %}">Log in</a> to see personalized activity.
-                {% endif %}
-            </p>
+<div class="home-dashboard">
+    <section class="home-welcome">
+        <div>
+            <p class="home-eyebrow">YOUR COMMUNITY DESK</p>
+            <h1>See what your people are making.</h1>
+            <p>Fresh videos, ideas, and independent offerings from across Zeta.</p>
         </div>
+        <div class="home-create-links">
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'Video:video_upload' %}">Share a video <span aria-hidden="true">↗</span></a>
+                <a href="{% url 'articles:article-create' %}">Write a story <span aria-hidden="true">↗</span></a>
+            {% else %}
+                <a href="{% url 'register' %}">Join the community <span aria-hidden="true">↗</span></a>
+            {% endif %}
+        </div>
+    </section>
 
-    {% endif %}
+    <div class="home-dashboard-grid">
+        <section class="home-feed" aria-labelledby="home-feed-title">
+            <header class="home-section-heading">
+                <div>
+                    <p class="home-eyebrow">THE LATEST</p>
+                    <h2 id="home-feed-title">Community activity</h2>
+                </div>
+                {% if request.user.is_authenticated and not is_following_anyone %}
+                    <a class="home-subtle-link" href="{% url 'user_search' %}">Find people to follow <span aria-hidden="true">→</span></a>
+                {% endif %}
+            </header>
 
+            {% if feed_items %}
+                <div class="home-activity-list">
+                    {% for item in feed_items %}
+                        {% if item.kind == "video" %}
+                            <article class="home-activity home-activity--video">
+                                <a class="home-activity-media" href="{% url 'Video:video_details' item.obj.id %}" aria-label="Watch {{ item.obj.title }}">
+                                    {% if item.obj.thumbnail %}
+                                        <img src="{{ item.obj.thumbnail.url }}" alt="" loading="lazy">
+                                    {% else %}
+                                        <span aria-hidden="true">▶</span>
+                                    {% endif %}
+                                </a>
+                                <div class="home-activity-copy">
+                                    <div class="home-activity-meta">
+                                        <span class="home-type home-type--video">VIDEO</span>
+                                        <time datetime="{{ item.created|date:'c' }}">{{ item.created|date:"M j" }}</time>
+                                    </div>
+                                    <h3><a href="{% url 'Video:video_details' item.obj.id %}">{{ item.obj.title }}</a></h3>
+                                    <p>Shared by <a href="{% url 'public_profile' item.obj.author.username %}">{{ item.obj.author.username }}</a></p>
+                                    <a class="home-activity-action" href="{% url 'Video:video_details' item.obj.id %}">Watch video <span aria-hidden="true">→</span></a>
+                                </div>
+                            </article>
+                        {% elif item.kind == "article" %}
+                            <article class="home-activity home-activity--article">
+                                <div class="home-article-mark" aria-hidden="true">Aa</div>
+                                <div class="home-activity-copy">
+                                    <div class="home-activity-meta">
+                                        <span class="home-type home-type--article">STORY</span>
+                                        <time datetime="{{ item.created|date:'c' }}">{{ item.created|date:"M j" }}</time>
+                                    </div>
+                                    <h3><a href="{{ item.obj.get_absolute_url }}">{{ item.obj.title }}</a></h3>
+                                    <p class="home-article-excerpt">{{ item.obj.content|truncatewords:30 }}</p>
+                                    <p>Written by <a href="{% url 'public_profile' item.obj.author.username %}">{{ item.obj.author.username }}</a></p>
+                                    <a class="home-activity-action" href="{{ item.obj.get_absolute_url }}">Read story <span aria-hidden="true">→</span></a>
+                                </div>
+                            </article>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="home-empty">
+                    <span aria-hidden="true">✳</span>
+                    <h3>The next good thing starts here.</h3>
+                    <p>
+                        {% if request.user.is_authenticated %}
+                            Follow a few creators or share something of your own.
+                        {% else %}
+                            <a href="{% url 'login' %}">Sign in</a> to follow creators and shape your feed.
+                        {% endif %}
+                    </p>
+                    {% if request.user.is_authenticated %}<a href="{% url 'user_search' %}">Explore creators</a>{% endif %}
+                </div>
+            {% endif %}
+        </section>
+
+        <aside class="home-sidebar">
+            <section class="home-market-panel" aria-labelledby="home-market-title">
+                <header class="home-section-heading">
+                    <div>
+                        <p class="home-eyebrow">MADE AROUND HERE</p>
+                        <h2 id="home-market-title">From the market</h2>
+                    </div>
+                    <a class="home-icon-link" href="{% url 'products:product-list' %}" aria-label="Browse the market">↗</a>
+                </header>
+                {% for product in featured_products %}
+                    <a class="home-market-item" href="{{ product.get_absolute_url }}">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="" loading="lazy">
+                        {% else %}
+                            <span class="home-market-placeholder" aria-hidden="true">{{ product.title|first|upper }}</span>
+                        {% endif %}
+                        <span class="home-market-copy">
+                            <small>{{ product.get_kind_display }}{% if product.owner %} · {{ product.owner.username }}{% endif %}</small>
+                            <strong>{{ product.title }}</strong>
+                            <span>${{ product.price|floatformat:2 }}</span>
+                        </span>
+                    </a>
+                {% empty %}
+                    <p class="home-market-empty">No listings yet. The market is ready for its first maker.</p>
+                {% endfor %}
+                <a class="home-market-all" href="{% url 'products:product-list' %}">Explore all offerings <span aria-hidden="true">→</span></a>
+            </section>
+
+            <section class="home-quick-links" aria-labelledby="home-explore-title">
+                <p class="home-eyebrow">YOUR NEXT STOP</p>
+                <h2 id="home-explore-title">Explore Zeta</h2>
+                <a href="{% url 'Video:video_list' %}"><span>01</span>Video library <span aria-hidden="true">↗</span></a>
+                <a href="{% url 'articles:article-list' %}"><span>02</span>Community stories <span aria-hidden="true">↗</span></a>
+                <a href="{% url 'products:product-list' %}"><span>03</span>Independent market <span aria-hidden="true">↗</span></a>
+            </section>
+        </aside>
+    </div>
 </div>
 
 {% endblock %}

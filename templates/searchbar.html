@@ -1,11 +1,13 @@
-<div class="search-bar">
+<div class="search-bar" role="search">
     <form method="get" action="{% url 'user_search' %}">
+        <label class="visually-hidden" for="site-search">Search people</label>
         <input
             type="text"
             name="q"
-            placeholder="Search users..."
+            id="site-search"
+            placeholder="Find people..."
             value="{{ request.GET.q }}"
         >
-        <input type="submit" value="Search">
+        <button type="submit" aria-label="Search people"><span aria-hidden="true">⌕</span></button>
     </form>
 </div>

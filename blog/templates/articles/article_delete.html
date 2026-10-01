@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-
-<form action='.' method='POST'>{% csrf_token %}
-    <h1>Do you want to delete the post "{{ object.title }}"?</h1>
-    <p><input type='submit' value='Yes' />  <a href='../'>Cancel</a></p>
-
-</form>
-
-
-
-
+<section class="listing-editor">
+    <p class="home-eyebrow">REMOVE STORY</p>
+    <h1>Delete “{{ object.title }}”?</h1>
+    <p>This story will be removed from the community feed.</p>
+    <form action="." method="post" class="listing-form listing-delete-form">
+        {% csrf_token %}
+        <button type="submit" class="market-delete-button">Delete story</button>
+        <a href="{% url 'articles:article-detail' object.id %}">Keep story</a>
+    </form>
+</section>
 {% endblock %}

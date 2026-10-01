@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form action='.' method='POST'>{% csrf_token %}
-    <h1>Do you want to delete the product "{{ object.title }}"?</h1>
-    <p><input type='submit' value='Yes' />  <a href='../'>Cancel</a></p>
-</form>
+<main class="listing-editor">
+    <p class="store-kicker">REMOVE OFFERING</p>
+    <h1>Remove “{{ object.title }}”?</h1>
+    <p>This listing will no longer appear in the market.</p>
+    <form method="post" class="listing-form listing-delete-form">
+        {% csrf_token %}
+        <button type="submit" class="market-delete-button">Remove listing</button>
+        <a href="{{ object.get_absolute_url }}">Keep listing</a>
+    </form>
+</main>
 {% endblock %}

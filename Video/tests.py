@@ -89,3 +89,10 @@ class VisibleVideosTests(TestCase):
 		)
 
 		self.assertEqual(response.status_code, 200)
+
+	def test_video_detail_loads_compiled_frontend_bundle(self):
+		response = self.client.get(
+			reverse("Video:video_details", kwargs={"id": self.public_video.id})
+		)
+
+		self.assertContains(response, "js/app.js")

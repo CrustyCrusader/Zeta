@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="profile-list-page">
-    <h1>Notifications</h1>
+<section class="profile-list-page notifications-page">
+    <header class="page-heading">
+        <p class="home-eyebrow">YOUR UPDATES</p>
+        <h1>Notifications</h1>
+    </header>
     {% include "notifications/_notification_items.html" %}
     {% include "pagination.html" %}
-</div>
+</section>
 {% endblock %}

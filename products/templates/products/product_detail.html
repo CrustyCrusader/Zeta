@@ -1,7 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ object.title }}</h1>
-<p>{{ object.description }}</p>
-<p>{{ object.price }}</p>
+<section class="market-detail">
+	<a class="market-back-link" href="{% url 'products:product-list' %}">← Back to the market</a>
+	<article class="market-detail-layout">
+		<div class="market-detail-media">
+			{% if product.image %}
+				<img src="{{ product.image.url }}" alt="{{ product.title }}">
+			{% else %}
+				<div class="store-placeholder store-placeholder--{{ product.kind }}" aria-hidden="true">
+					<span>{{ product.get_kind_display }}</span>
+					<strong>{{ product.title|first|upper }}</strong>
+				</div>
+			{% endif %}
+		</div>
+		<div class="market-detail-copy">
+			<div class="store-card-meta">
+				<span class="store-kind">{{ product.get_kind_display }}</span>
+				{% if product.featured %}<span class="store-featured-label">Community pick</span>{% endif %}
+			</div>
+			<h1>{{ product.title }}</h1>
+			{% if product.owner %}
+				<p class="market-seller">Offered by <a href="{% url 'public_profile' product.owner.username %}">{{ product.owner.username }}</a></p>
+			{% else %}
+				<p class="market-seller">Offered by a Zeta member</p>
+			{% endif %}
+			<div class="market-price">
+				<span>{% if product.kind == "service" %}Starting at{% else %}Price{% endif %}</span>
+				<strong>${{ product.price|floatformat:2 }}</strong>
+			</div>
+			<div class="market-description">
+				<h2>About this offer</h2>
+				<p>{{ product.description|default:"The seller has not added a description yet."|linebreaksbr }}</p>
+			</div>
+			{% if product.owner %}
+				<a class="market-contact-link" href="{% url 'public_profile' product.owner.username %}">Visit seller profile</a>
+			{% endif %}
+			{% if product.owner == request.user %}
+				<div class="market-owner-actions">
+					<a href="{% url 'products:product-update' product.id %}">Edit listing</a>
+					<a href="{% url 'products:product-delete' product.id %}">Remove listing</a>
+				</div>
+			{% endif %}
+		</div>
+	</article>
+</section>
 {% endblock %}
